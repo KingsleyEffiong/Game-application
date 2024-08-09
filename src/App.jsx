@@ -26,6 +26,7 @@ function App() {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
+    // Load userData from localStorage on initial render
     const storedUserData = localStorage.getItem('userData');
     if (storedUserData) {
       setUserData(JSON.parse(storedUserData));
@@ -39,22 +40,28 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    // Update localStorage whenever userData changes
+    if (userData) {
+      localStorage.setItem('userData', JSON.stringify(userData));
+    }
+  }, [userData]);
+
   const handleGetStarted = async (name) => {
     const uniqueId = `mt${uuidv4().slice(0, 10)}`;
     const point = 12000;
     const referralLink = `${window.location.origin}?ref=${uniqueId}`;
     
     try {
-      await addDoc(collection(db, "users"), {
+      const newUser = {
         id: uniqueId,
         name: name,
         point: point,
         referralLink: referralLink,
         timestamp: new Date()
-      });
-      const userData = { id: uniqueId, name, point: point, referralLink };
-      localStorage.setItem('userData', JSON.stringify(userData));
-      setUserData(userData);
+      };
+      await addDoc(collection(db, "users"), newUser);
+      setUserData(newUser);
     } catch (error) {
       console.error("Error saving user data: ", error);
     }
@@ -78,7 +85,6 @@ function App() {
               point: newPoints,
             };
             setUserData(updatedUserData);
-            localStorage.setItem('userData', JSON.stringify(updatedUserData));
           }
         });
       }
@@ -96,12 +102,15 @@ function App() {
         />
         <Route 
           path="/dashboard" 
-          element={userData ? <Home userData={userData} setUserData={setUserData} /> : <Navigate to="/" />} 
+          element={userData ? <Home userData={userData} /> : <Navigate to="/" />} 
         />
       </Routes>
     </Router>
   );
 }
+
+
+
 
 function Navbar({ userData }) {
   return (
@@ -139,7 +148,7 @@ function WelcomeSection({ handleGetStarted }) {
           className='w-80 my-3 rounded-full px-4 py-2 bg-slate-300 text-sm placeholder:text-stone-950 focus:outline-none focus:ring focus:ring-yellow-400 border-none focus:ring-opacity-50'
           type="text"
           value={input}
-          placeholder='Input your name'
+          placeholder='Input your telegram username'
           onChange={(e) => setInput(e.target.value)}
         />
         <button
@@ -152,7 +161,9 @@ function WelcomeSection({ handleGetStarted }) {
     </div>
   );
 }
-function Home({ userData, setUserData }) {
+
+
+function Home({ userData }) {
   const [showFriends, setShowFriends] = useState(false);
 
   return (
@@ -186,12 +197,15 @@ function Profile({ userData }) {
         <div className="flex flex-col mx-3">
           <h3 className="text-yellow-400 text-sm">{userData.name.toLowerCase()}</h3>
           <h3 className="text-yellow-400 text-sm">{userData.id.toLowerCase()}</h3>
-          <h3 className="text-yellow-400 text-sm">{new Intl.NumberFormat('en-NG').format((userData.point).toFixed(1))} points</h3>
+          <h3 className="text-yellow-400 text-sm">
+            {new Intl.NumberFormat('en-NG').format(userData.point)} points
+          </h3>
         </div>
       </div>
     </div>
   );
 }
+
 
 function HomeSection({children}) {
   return (
