@@ -72,7 +72,7 @@ function App() {
 
   const handleGetStarted = async (name) => {
     const uniqueId = `mt${uuidv4().slice(0, 10)}`;
-    const point = 12000;
+    const point = 5000;
     const referralLink = `${window.location.origin}?ref=${uniqueId}`;
 
     try {
@@ -108,7 +108,7 @@ function App() {
       if (!querySnapshot.empty) {
         querySnapshot.forEach(async (docSnap) => {
           const userRef = doc(db, "users", docSnap.id);
-          const newPoints = docSnap.data().point + 10;
+          const newPoints = docSnap.data().point + 1000;
   
           // Update points in the database
           await updateDoc(userRef, { point: newPoints });
