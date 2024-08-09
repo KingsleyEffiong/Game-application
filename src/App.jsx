@@ -70,6 +70,16 @@ function App() {
           const newPoints = docSnap.data().point + 10;
           await updateDoc(userRef, { point: newPoints });
           console.log(`Added 10 points to user with ID: ${refId}`);
+
+          // Update the userData state if the referral ID matches the current user's ID
+          if (userData && userData.id === refId) {
+            const updatedUserData = {
+              ...userData,
+              point: newPoints,
+            };
+            setUserData(updatedUserData);
+            localStorage.setItem('userData', JSON.stringify(updatedUserData));
+          }
         });
       }
     } catch (error) {
@@ -80,8 +90,14 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={userData ? <Navigate to="/dashboard" /> : <WelcomeSection handleGetStarted={handleGetStarted} />} />
-        <Route path="/dashboard" element={userData ? <Home userData={userData} /> : <Navigate to="/" />} />
+        <Route 
+          path="/" 
+          element={userData ? <Navigate to="/dashboard" /> : <WelcomeSection handleGetStarted={handleGetStarted} />} 
+        />
+        <Route 
+          path="/dashboard" 
+          element={userData ? <Home userData={userData} setUserData={setUserData} /> : <Navigate to="/" />} 
+        />
       </Routes>
     </Router>
   );
@@ -136,8 +152,7 @@ function WelcomeSection({ handleGetStarted }) {
     </div>
   );
 }
-
-function Home({ userData }) {
+function Home({ userData, setUserData }) {
   const [showFriends, setShowFriends] = useState(false);
 
   return (
@@ -162,7 +177,6 @@ function Home({ userData }) {
     </>
   );
 }
-
 
 function Profile({ userData }) {
   return (
