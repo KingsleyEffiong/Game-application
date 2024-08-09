@@ -44,11 +44,6 @@ function App() {
       const userData = { id: uniqueId, name, point: point };
       localStorage.setItem('userData', JSON.stringify(userData));
       setUserData(userData);
-      setTimeout(() => {
-        <customModal>
-        <h3>You have been given {userData.point} 🥰</h3>
-      </customModal>
-      },3000)
     } catch (error) {
       console.error("Error saving user data: ", error);
     }
@@ -87,12 +82,6 @@ function WelcomeSection({ handleGetStarted }) {
       handleGetStarted(input);
     }
   };
-
-  function customModal({children}){
-    return <div className='w-40 h-20 bg-yellow-500 fixed right-1 top-0'>
-        {children}
-    </div>
-  }
 
   return (
     <div
