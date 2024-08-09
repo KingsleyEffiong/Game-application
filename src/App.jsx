@@ -59,7 +59,7 @@ function App() {
       <Navbar userData={userData} />
       <Routes>
         <Route path="/" element={userData ? <Navigate to="/dashboard" /> : <WelcomeSection handleGetStarted={handleGetStarted} />} />
-        <Route path="/dashboard" element={userData ? <Home userData={userData} /> : <Navigate to="/getstarted" />} />
+        <Route path="/dashboard" element={userData ? <Home userData={userData} /> : <Navigate to="/" />} />
       </Routes>
     </Router>
   );
