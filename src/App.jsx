@@ -6,7 +6,7 @@ import mounttechCoin from './images/mount tech silver.png';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
 import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
 import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
-import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBzaz4dSfndXEVbA7KVok43cx1jUltglDE",
@@ -18,10 +18,10 @@ const firebaseConfig = {
   measurementId: "G-1DKLMNX3QT"
 };
 
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 function App() {
   const [userData, setUserData] = useState(null);
 
@@ -47,11 +47,34 @@ function App() {
     }
   }, [userData]);
 
+  useEffect(() => {
+    // Poll the database every 5 seconds to check for updates
+    const pollDatabase = setInterval(async () => {
+      if (userData) {
+        const userRef = query(collection(db, "users"), where("id", "==", userData.id));
+        const querySnapshot = await getDocs(userRef);
+        if (!querySnapshot.empty) {
+          querySnapshot.forEach(docSnap => {
+            const updatedUserData = docSnap.data();
+            if (updatedUserData.point !== userData.point) {
+              // Update state and localStorage with new data
+              setUserData(updatedUserData);
+              localStorage.setItem('userData', JSON.stringify(updatedUserData));
+              console.log("User data updated from polling");
+            }
+          });
+        }
+      }
+    }, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(pollDatabase); // Cleanup the interval on unmount
+  }, [userData]);
+
   const handleGetStarted = async (name) => {
     const uniqueId = `mt${uuidv4().slice(0, 10)}`;
     const point = 12000;
     const referralLink = `${window.location.origin}?ref=${uniqueId}`;
-    
+
     try {
       const newUser = {
         id: uniqueId,
@@ -69,30 +92,44 @@ function App() {
 
   const handleReferral = async (refId) => {
     try {
+      const storedUserData = localStorage.getItem('userData');
+      if (storedUserData) {
+        const currentUserData = JSON.parse(storedUserData);
+        
+        // Prevent adding points if the referral ID matches the current user's ID
+        if (currentUserData.id === refId) {
+          console.log("Referral link belongs to the current user. Points not added.");
+          return;
+        }
+      }
+  
       const q = query(collection(db, "users"), where("id", "==", refId));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         querySnapshot.forEach(async (docSnap) => {
           const userRef = doc(db, "users", docSnap.id);
           const newPoints = docSnap.data().point + 10;
+  
+          // Update points in the database
           await updateDoc(userRef, { point: newPoints });
+  
+          // Update the referrer's localStorage with the new points
+          const updatedUserData = {
+            ...docSnap.data(),
+            point: newPoints,
+          };
+  
+          localStorage.setItem('userData', JSON.stringify(updatedUserData));
+          window.localStorage.setItem('userDataUpdated', Date.now().toString());
+  
           console.log(`Added 10 points to user with ID: ${refId}`);
-
-          // Update the userData state if the referral ID matches the current user's ID
-          if (userData && userData.id === refId) {
-            const updatedUserData = {
-              ...userData,
-              point: newPoints,
-            };
-            setUserData(updatedUserData);
-          }
         });
       }
     } catch (error) {
       console.error("Error handling referral: ", error);
     }
   };
-
+  
   return (
     <Router>
       <Routes>
@@ -108,7 +145,6 @@ function App() {
     </Router>
   );
 }
-
 
 
 
@@ -280,8 +316,9 @@ function ButtonBar({ onFriendsClick }) {
   return (
     <div className='fixed bottom-0 w-full h-20 xl:mx-20 bg-slate-950'>
       <div className='flex justify-around items-center'>
-        <button className='text-white'><i className="bi bi-house-fill"></i></button>
-        <button className='text-white' onClick={onFriendsClick}><i className="bi bi-people-fill"></i></button>
+        <button className='text-white'><i className="bi bi-house-fill text-2xl"></i></button>
+        <button className='text-white'><i className="bi bi-bar-chart-fill text-2xl"></i></button>
+        <button className='text-white' onClick={onFriendsClick}><i className="bi bi-people-fill text-2xl"></i></button>
       </div>
     </div>
   );
