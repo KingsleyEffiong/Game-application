@@ -321,7 +321,7 @@ function Tasks({ userData, setUserData }) {
         <ul>
           <li>
             <button 
-              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-around px-5 py-2'
+              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
               onClick={() => handleTaskClick('Follow our Twitter account', 'https://x.com/Mounttechsol1?t=bfEdrzQCM6cq2mwq8oF0aw&s=09')}
             >
               <h3>Follow our Twitter account</h3>
@@ -332,10 +332,10 @@ function Tasks({ userData, setUserData }) {
           </li>
           <li>
             <button 
-              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-around px-5 py-2'
+              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
               onClick={() => handleTaskClick('Follow our Telegram announcement page', 'https://t.me/mounttechcolutions')}
             >
-              <h3>Follow our Telegram announcement page</h3>
+              <h3>Follow our Telegram announcement</h3>
               <a href="https://t.me/mounttechcolutions" target="_blank" rel="noopener noreferrer">
                 <i className="bi bi-telegram"></i>
               </a>
@@ -343,7 +343,7 @@ function Tasks({ userData, setUserData }) {
           </li>
           <li>
             <button 
-              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-around px-5 py-2'
+              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
               onClick={() => handleTaskClick('Follow our Telegram community', 'https://t.me/+o0-w-_44_rdkYTQ0')}
             >
               <h3>Follow our Telegram community</h3>
@@ -364,7 +364,7 @@ function Reward({userData}) {
     <div className='w-full mb-2 xl:mx-20 h-auto'>
       <div className='mx-3'>
         <h3 className='text-white my-6'>Available Rewards</h3>
-        <div className='w-80 bg-yellow-500 my-6 rounded-full flex flex-row justify-around px-5 py-2'>
+        <div className='w-80 bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'>
           <h3>{new Intl.NumberFormat('en-NG').format((userData.point).toFixed(1))}</h3>
           <i className="bi bi-trophy"></i>
         </div>
@@ -403,11 +403,11 @@ function SubmitWalletAddress({ userData }) {
   };
 
   return (
-    <div className="w-full mb-2 xl:mx-20 h-auto ">
+    <div className="w-full mb-2 md:mx-20 h-auto">
       <div className="mx-3">
         <h3 className="text-white">Submit your wallet address for airdrop🥰</h3>
         <input
-          className='w-80 my-3 rounded-full px-4 py-2 bg-slate-300 text-sm placeholder:text-stone-950 focus:outline-none focus:ring focus:ring-yellow-400 border-none focus:ring-opacity-50'
+          className='w-56  md:w-80 my-3 rounded-full px-4 py-2 bg-slate-300 text-sm placeholder:text-stone-950 focus:outline-none focus:ring focus:ring-yellow-400 border-none focus:ring-opacity-50'
           type="text"
           placeholder='wallet address'
           value={walletAddress}
@@ -443,7 +443,7 @@ function Friends({ referralLink, onClose }) {
       <h2 className="text-white">Share this link with your friends:</h2>
       <div className="relative">
         <button
-          className='w-96 bg-yellow-500 my-6 rounded-full flex flex-row justify-around px-5 py-2'
+          className='w-72 bg-yellow-500 my-6 rounded-full flex flex-row justify-around px-5 py-2'
           onClick={copyToClipboard}
         >
           {copied ? "Link copied!" : "Copy Link"}
