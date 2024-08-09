@@ -2,10 +2,11 @@ import './index.css';
 import logo from './images/logo.png';
 import { useState, useEffect } from 'react';
 import welcomeBackground from './images/good health, more $mtt !_20240808_005428_0000.png';
+import mounttechCoin from './images/mount tech silver.png';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
-import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
 import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBzaz4dSfndXEVbA7KVok43cx1jUltglDE",
@@ -29,19 +30,29 @@ function App() {
     if (storedUserData) {
       setUserData(JSON.parse(storedUserData));
     }
+
+    // Check for referral link
+    const searchParams = new URLSearchParams(window.location.search);
+    const refId = searchParams.get('ref');
+    if (refId) {
+      handleReferral(refId);
+    }
   }, []);
 
   const handleGetStarted = async (name) => {
-    const uniqueId = `mt${uuidv4().slice(0,10)}`;
+    const uniqueId = `mt${uuidv4().slice(0, 10)}`;
     const point = 12000;
+    const referralLink = `${window.location.origin}?ref=${uniqueId}`;
+    
     try {
       await addDoc(collection(db, "users"), {
         id: uniqueId,
         name: name,
         point: point,
+        referralLink: referralLink,
         timestamp: new Date()
       });
-      const userData = { id: uniqueId, name, point: point };
+      const userData = { id: uniqueId, name, point: point, referralLink };
       localStorage.setItem('userData', JSON.stringify(userData));
       setUserData(userData);
     } catch (error) {
@@ -49,9 +60,25 @@ function App() {
     }
   };
 
+  const handleReferral = async (refId) => {
+    try {
+      const q = query(collection(db, "users"), where("id", "==", refId));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        querySnapshot.forEach(async (docSnap) => {
+          const userRef = doc(db, "users", docSnap.id);
+          const newPoints = docSnap.data().point + 10;
+          await updateDoc(userRef, { point: newPoints });
+          console.log(`Added 10 points to user with ID: ${refId}`);
+        });
+      }
+    } catch (error) {
+      console.error("Error handling referral: ", error);
+    }
+  };
+
   return (
     <Router>
-      <Navbar userData={userData} />
       <Routes>
         <Route path="/" element={userData ? <Navigate to="/dashboard" /> : <WelcomeSection handleGetStarted={handleGetStarted} />} />
         <Route path="/dashboard" element={userData ? <Home userData={userData} /> : <Navigate to="/" />} />
@@ -88,10 +115,12 @@ function WelcomeSection({ handleGetStarted }) {
       style={{ backgroundImage: `linear-gradient(to top, rgba(4, 0, 31, 0.5) 50%, rgba(4, 0, 31, 0.5) 50%), url(${welcomeBackground})` }}
       className={`bg-slate-950 bg-blend-soft-light h-screen w-full bg-cover xl:bg-center flex justify-center items-center flex-col`}
     >
+      <Logo />
+      <img className='w-24 fixed top-10 right-3' src={mounttechCoin} alt="coin" />
       <h1 className='text-white uppercase px-3 md:text-2xl'>Let's get started for your reward🥰</h1>
       <div className='mx-4'>
         <input
-          className='w-96 my-3 rounded-full px-4 py-2 bg-slate-300 text-sm placeholder:text-stone-950 focus:outline-none focus:ring focus:ring-yellow-400 border-none focus:ring-opacity-50'
+          className='w-80 my-3 rounded-full px-4 py-2 bg-slate-300 text-sm placeholder:text-stone-950 focus:outline-none focus:ring focus:ring-yellow-400 border-none focus:ring-opacity-50'
           type="text"
           value={input}
           placeholder='Input your name'
@@ -109,16 +138,31 @@ function WelcomeSection({ handleGetStarted }) {
 }
 
 function Home({ userData }) {
+  const [showFriends, setShowFriends] = useState(false);
+
   return (
-    <div className="container w-96">
-      <HomeSection>
-      <Tasks />
-      <Reward userData={userData} />
-      </HomeSection>
-      <ButtonBar />
-    </div>
+    <>
+      <Navbar userData={userData} />
+      <div className="flex flex-col items-center">
+        <div className="w-full mt-20 xl:mx-20 h-auto border-white border-b-2">
+          <Tasks />
+        </div>
+        <div className="w-full mb-2 xl:mx-20 h-auto">
+          <Reward userData={userData} />
+        </div>
+        <Overlay />
+        {showFriends && (
+          <Friends 
+            referralLink={userData.referralLink}
+            onClose={() => setShowFriends(false)}
+          />
+        )}
+      </div>
+      <ButtonBar onFriendsClick={() => setShowFriends(true)} />
+    </>
   );
 }
+
 
 function Profile({ userData }) {
   return (
@@ -137,7 +181,7 @@ function Profile({ userData }) {
 
 function HomeSection({children}) {
   return (
-    <div className='xl:h-[600px] w-full overflow-auto'>
+    <div className=''>
       {children}
     </div>
   );
@@ -145,7 +189,7 @@ function HomeSection({children}) {
 
 function Tasks() {
   return (
-    <div className='w-full mt-40 h-auto'>
+    <div className='w-full mt-20 xl:mx-20 h-auto border-white border-b-2'>
       <div className='mx-3'>
         <h3 className='text-white'>Tasks</h3>
         <ul>
@@ -169,33 +213,48 @@ function Tasks() {
 
 function Reward({userData}) {
   return (
-    <div className='w-full mb-20 h-auto'>
+    <div className='w-full mb-2 xl:mx-20 h-auto'>
       <div className='mx-3'>
-        <h3 className='text-white'>Reward</h3>
-        <ul>
-          <li>
-            <button className='w-80 bg-yellow-500 my-6 rounded-full flex flex-row justify-around px-5 py-2'>
-              <h3>Your total earning is {userData.point} points</h3>
-            </button>
-          </li>
-        </ul>
-        <div className='mx-4'>
-          <input className='md:w-64 my-3 rounded-full px-4 py-2 bg-white text-sm placeholder:text-stone-950 focus:outline-none focus:ring focus:ring-yellow-400 border-none focus:ring-opacity-50' type="text" placeholder='input your wallet address' />
-          <button className='mx-3 uppercase inline-block bg-yellow-400 rounded-full px-4 py-2 hover:bg-yellow-400 transition-colors duration-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'>Send</button>
+        <h3 className='text-white my-6'>Available Rewards</h3>
+        <div className='w-80 bg-yellow-500 my-6 rounded-full flex flex-row justify-around px-5 py-2'>
+          <h3>{new Intl.NumberFormat('en-NG').format((userData.point).toFixed(1))}</h3>
+          <i className="bi bi-trophy"></i>
         </div>
       </div>
     </div>
   );
 }
 
-function ButtonBar() {
+function Friends({ referralLink, onClose }) {
   return (
-    <div className='fixed bottom-0 w-full mx-auto left-0 h-14 bg-yellow-600 grid'>
-      <ul className='flex flex-row justify-around items-center'>
-        <li><i className="bi bi-house text-white text-3xl cursor-pointer hover:text-yellow-400 transition-colors duration-300"></i></li>
-        <li><i className="bi bi-bar-chart text-white text-3xl cursor-pointer hover:text-yellow-400 transition-colors duration-300"></i></li>
-        <li><i className="bi bi-people-fill text-white text-3xl cursor-pointer hover:text-yellow-400 transition-colors duration-300"></i></li>
-      </ul>
+    <div className="fixed w-full h-full bg-slate-950 z-50 opacity-90 top-0 left-0 flex flex-col items-center justify-center">
+      <h2 className="text-white">Share this link with your friends:</h2>
+      <p className="text-yellow-400 break-words text-center px-4">{referralLink}</p>
+      <button 
+        className="mt-6 bg-yellow-400 text-black px-4 py-2 rounded-full hover:bg-yellow-300 transition-colors duration-300"
+        onClick={onClose}
+      >
+        Close
+      </button>
+    </div>
+  );
+}
+
+
+function Overlay() {
+  return (
+    <div className='w-full h-56 xl:mx-20 my-6 flex items-center justify-center'>
+    </div>
+  );
+}
+
+function ButtonBar({ onFriendsClick }) {
+  return (
+    <div className='fixed bottom-0 w-full h-20 xl:mx-20 bg-slate-950'>
+      <div className='flex justify-around items-center'>
+        <button className='text-white'><i className="bi bi-house-fill"></i></button>
+        <button className='text-white' onClick={onFriendsClick}><i className="bi bi-people-fill"></i></button>
+      </div>
     </div>
   );
 }
