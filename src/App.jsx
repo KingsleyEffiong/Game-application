@@ -169,7 +169,7 @@ function CongratulationsPopup({ onClose }) {
   );
 }
 
-function LeadershipBoard({ userData }) {
+function LeadershipBoard({ userData, onLeadershipClick }) {
   const [leaderboard, setLeaderboard] = useState([]);
 
   useEffect(() => {
@@ -179,10 +179,9 @@ function LeadershipBoard({ userData }) {
         const usersSnapshot = await getDocs(usersCollection);
         const usersList = usersSnapshot.docs.map(doc => doc.data());
 
-        // Sort users by points in descending order
+        // Sort users by points in descending order and get top 30 users
         const rankedUsers = usersList.sort((a, b) => b.point - a.point);
-
-        setLeaderboard(rankedUsers);
+        setLeaderboard(rankedUsers.slice(0, 30)); // Display top 30 users
       } catch (e) {
         console.error("Error fetching leaderboard: ", e);
       }
@@ -192,19 +191,37 @@ function LeadershipBoard({ userData }) {
   }, []);
 
   return (
-    <div className="w-full mx-3 mt-10 xl:mx-12">
-      <h2 className="text-white text-2xl mb-4">Leadership Board</h2>
-      <ul>
-        {leaderboard.map((user, index) => (
-          <li key={index} className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2">
-            <span className="text-black">{index + 1}. {user.name}</span>
-            <span className="float-right text-black">{user.point} points</span>
+    <div className="fixed w-full h-full bg-slate-950 z-50 opacity-90 top-0 left-0 flex flex-col items-center justify-center">
+      <div className='h-[800px] overflow-auto px-6'>
+        <div className="text-white mb-8">
+          <li className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2">
+            <span className="text-black"> {userData.name}</span>
+            <span className="float-right text-black">{userData.point} points</span>
           </li>
-        ))}
-      </ul>
+        </div>
+        <div className='flex justify-between items-center w-full'>
+          <h2 className="text-white text-2xl mb-4">Leadership Board</h2>
+          <button 
+            className="mt-6 bg-yellow-400 text-black px-4 py-2 rounded-full hover:bg-yellow-300 transition-colors duration-300"
+            onClick={onLeadershipClick}
+          >
+            Close
+          </button>
+        </div>
+        <ul>
+          {leaderboard.map((user, index) => (
+            <li key={index} className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2">
+              <span className="text-black">{index + 1}. {user.name}</span>
+              <span className="float-right text-black">{user.point} points</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
+
+
 
 
 
@@ -260,30 +277,37 @@ function WelcomeSection({ handleGetStarted }) {
 
 function Home({ userData }) {
   const [showFriends, setShowFriends] = useState(false);
+  const [showLeadershipBoard, setShowLeadershipBoard] = useState(false);
+
+  const handleLeadershipClick = () => {
+    setShowLeadershipBoard(!showLeadershipBoard);
+  };
 
   return (
     <>
       <Navbar userData={userData} />
       <div className="flex flex-col items-center">
         <div className="w-full mt-20 xl:mx-20 h-auto border-white border-b-2">
-          <Tasks userData={userData}/>
+          <Tasks userData={userData} />
         </div>
-        <div className="w-full mt-20 xl:mx-20 h-auto border-white border-b-2">
-          <LeadershipBoard />
-        </div>
+        {showLeadershipBoard && (
+          <div className="w-full mt-20 xl:mx-20 h-auto border-white border-b-2">
+            <LeadershipBoard userData={userData} onLeadershipClick={handleLeadershipClick} />
+          </div>
+        )}
         <div className="w-full mb-2 xl:mx-20 h-auto">
           <Reward userData={userData} />
         </div>
         <SubmitWalletAddress userData={userData} />
         <Overlay />
         {showFriends && (
-          <Friends 
+          <Friends
             referralLink={userData.referralLink}
             onClose={() => setShowFriends(false)}
           />
         )}
       </div>
-      <ButtonBar onFriendsClick={() => setShowFriends(true)} />
+      <ButtonBar onFriendsClick={() => setShowFriends(true)} onLeadershipClick={handleLeadershipClick} />
     </>
   );
 }
@@ -510,25 +534,26 @@ function Overlay() {
   );
 }
 
-function ButtonBar({ onFriendsClick }) {
+function ButtonBar({ onFriendsClick, onLeadershipClick }) {
   return (
     <div className='fixed bottom-0 w-full h-20 xl:mx-20 bg-slate-950'>
       <div className='flex justify-around items-center'>
         <button className='text-white'>
           <i className="bi bi-house-fill text-2xl"></i>
           <h4>Home</h4>
-          </button>
-        <button className='text-white'>
+        </button>
+        <button className='text-white' onClick={onLeadershipClick}>
           <i className="bi bi-bar-chart-fill text-2xl"></i>
           <h4>Leadership board</h4>
-          </button>
+        </button>
         <button className='text-white' onClick={onFriendsClick}>
           <i className="bi bi-people-fill text-2xl"></i>
           <h4>Friends</h4>
-          </button>
+        </button>
       </div>
     </div>
   );
 }
+
 
 export default App;
