@@ -416,6 +416,17 @@ function Tasks({ userData }) {
               </a>
           </li>
           <li>
+          <a href="https://youtube.com/@mounttechsolutions?si=WTlV_RfZF0q7ApOs" target="_blank" rel="noopener noreferrer">
+            <button
+              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
+              onClick={() => handleTaskClick('Follow our Youtube page')}
+            >
+              <h3 className='text-left'>Subscribe to Mount Tech Channel +500</h3>
+                <i className="bi bi-youtube"></i>
+            </button>
+              </a>
+          </li>
+          <li>
           <a href="https://t.me/+o0-w-_44_rdkYTQ0" target="_blank" rel="noopener noreferrer">
             <button
               className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
