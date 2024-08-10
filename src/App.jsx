@@ -138,11 +138,11 @@ function App() {
     <Router>
       {showPopup && <CongratulationsPopup onClose={() => setShowPopup(false)} />}
       <Routes>
-        <Route 
+        <Route index
           path="/" 
-          element={userData ? <Navigate to="/dashboard" /> : <WelcomeSection handleGetStarted={handleGetStarted} />} 
+          element={userData ? <Navigate  to="/dashboard" /> : <WelcomeSection handleGetStarted={handleGetStarted} />} 
         />
-        <Route 
+        <Route index
           path="/dashboard" 
           element={userData ? <Home userData={userData} /> : <Navigate to="/" />} 
         />
