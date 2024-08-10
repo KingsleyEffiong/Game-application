@@ -289,7 +289,7 @@ function Home({ userData }) {
       <Navbar userData={userData} />
       <div className="flex flex-col items-center">
         <div className="w-full mt-20 xl:mx-20 h-auto border-white border-b-2">
-        {/* <UpdateUserPointDaily userData={userData}/> */}
+        <UpdateUserPointDaily userData={userData}/>
           <Tasks userData={userData} />
         </div>
         {showLeadershipBoard && (
@@ -324,7 +324,7 @@ function Profile({ userData }) {
           <h3 className="text-yellow-400 text-sm">{userData.name.toLowerCase()}</h3>
           <h3 className="text-yellow-400 text-sm">{userData.id.toLowerCase()}</h3>
           <h3 className="text-yellow-400 text-sm">
-            {new Intl.NumberFormat('en-NG').format(userData.point)} points
+            {/* {new Intl.NumberFormat('en-NG').format(userData.point)} points */}
           </h3>
         </div>
       </div>
@@ -426,6 +426,21 @@ function Tasks({ userData }) {
     </div>
   );
 }
+
+function UpdateUserPointDaily({ userData }) {
+
+  return (
+    <div className='h-10 flex flex-col justify-center items-center py-24'>
+      <img className='w-52 animate-spinSlow' src={mounttechCoin} alt="" /> {/* Replace with your image path */}
+      <h2>
+      <h3 className="text-yellow-400 text-sm">
+            {new Intl.NumberFormat('en-NG').format(userData.point)} Points.
+          </h3>
+      </h2>
+    </div>
+  );
+}
+
 
 
 function Reward({userData}) {
