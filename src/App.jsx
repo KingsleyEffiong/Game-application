@@ -171,6 +171,7 @@ function CongratulationsPopup({ onClose }) {
 
 function LeadershipBoard({ userData, onLeadershipClick }) {
   const [leaderboard, setLeaderboard] = useState([]);
+  const [userRank, setUserRank] = useState(null);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -182,26 +183,38 @@ function LeadershipBoard({ userData, onLeadershipClick }) {
         // Sort users by points in descending order and get top 30 users
         const rankedUsers = usersList.sort((a, b) => b.point - a.point);
         setLeaderboard(rankedUsers.slice(0, 30)); // Display top 30 users
+
+        // Find the user's rank
+        const userIndex = rankedUsers.findIndex(user => user.id === userData.id);
+        setUserRank(userIndex !== -1 ? userIndex + 1 : null); // Rank is 1-based
       } catch (e) {
         console.error("Error fetching leaderboard: ", e);
       }
     };
 
     fetchLeaderboard();
-  }, []);
+  }, [userData.id]);
 
   return (
-    <div className="fixed w-full h-full bg-slate-950 z-50  top-0 left-0 flex flex-col items-center justify-center">
+    <div className="fixed w-full h-full bg-slate-950 z-50 top-0 left-0 flex flex-col items-center justify-center">
       <div className='h-[800px] overflow-auto px-6'>
         <div className="text-white mb-8">
-        <h2 className="text-white text-2xl mb-4 uppercase text-center">Leadership Board</h2>
+          <h2 className="text-white text-2xl mb-4 uppercase text-center">Leadership Board</h2>
           <li className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2">
-            <span className="text-black"> {userData.name}</span>
-            <span className="float-right text-black">{userData.point} points</span>
-          </li>
+  <span className="text-black">
+    {userRank ? `${userRank}` : 'Unranked'}. {userData.name}
+  </span>
+  <span className="float-right text-black">{userData.point} points</span>
+</li>
+
+          {/* {userRank && (
+            <div className="text-white text-center mb-4">
+              <h3 className="text-xl">Your Rank: {userRank}</h3>
+            </div>
+          )} */}
         </div>
         <div className='flex justify-between items-center w-full'>
-        <h5 className="text-white mb-4">Top 100</h5>
+          <h5 className="text-white mb-4">Top 30</h5>
           <button 
             className="mt-6 bg-yellow-400 text-black px-4 py-2 rounded-full hover:bg-yellow-300 transition-colors duration-300"
             onClick={onLeadershipClick}
