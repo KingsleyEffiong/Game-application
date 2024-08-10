@@ -191,7 +191,7 @@ function LeadershipBoard({ userData, onLeadershipClick }) {
   }, []);
 
   return (
-    <div className="fixed w-full h-full bg-slate-950 z-50 opacity-90 top-0 left-0 flex flex-col items-center justify-center">
+    <div className="fixed w-full h-full bg-slate-950 z-50  top-0 left-0 flex flex-col items-center justify-center">
       <div className='h-[800px] overflow-auto px-6'>
         <div className="text-white mb-8">
         <h2 className="text-white text-2xl mb-4 uppercase text-center">Leadership Board</h2>
@@ -514,11 +514,11 @@ function SubmitWalletAddress({ userData }) {
   return (
     <div className="w-full mb-2 md:mx-20 h-auto">
       <div className="mx-3">
-        <h3 className="text-white">Submit your wallet address for airdrop🥰</h3>
+        <h3 className="text-white">Submit your wallet address</h3>
         <input
           className='w-56  md:w-80 my-3 rounded-full px-4 py-2 bg-slate-300 text-sm placeholder:text-stone-950 focus:outline-none focus:ring focus:ring-yellow-400 border-none focus:ring-opacity-50'
           type="text"
-          placeholder='wallet address'
+          placeholder='BSC (Bep 20) wallet address'
           value={walletAddress}
           onChange={(e) => setWalletAddress(e.target.value)}
         />
