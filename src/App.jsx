@@ -194,13 +194,14 @@ function LeadershipBoard({ userData, onLeadershipClick }) {
     <div className="fixed w-full h-full bg-slate-950 z-50 opacity-90 top-0 left-0 flex flex-col items-center justify-center">
       <div className='h-[800px] overflow-auto px-6'>
         <div className="text-white mb-8">
+        <h2 className="text-white text-2xl mb-4 uppercase text-center">Leadership Board</h2>
           <li className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2">
             <span className="text-black"> {userData.name}</span>
             <span className="float-right text-black">{userData.point} points</span>
           </li>
         </div>
         <div className='flex justify-between items-center w-full'>
-          <h2 className="text-white text-2xl mb-4">Leadership Board</h2>
+        <h5 className="text-white mb-4">Top 100</h5>
           <button 
             className="mt-6 bg-yellow-400 text-black px-4 py-2 rounded-full hover:bg-yellow-300 transition-colors duration-300"
             onClick={onLeadershipClick}
@@ -288,6 +289,7 @@ function Home({ userData }) {
       <Navbar userData={userData} />
       <div className="flex flex-col items-center">
         <div className="w-full mt-20 xl:mx-20 h-auto border-white border-b-2">
+        <UpdateUserPointDaily userData={userData}/>
           <Tasks userData={userData} />
         </div>
         {showLeadershipBoard && (
@@ -335,6 +337,47 @@ function HomeSection({children}) {
   return (
     <div className=''>
       {children}
+    </div>
+  );
+}
+
+function UpdateUserPointDaily({ userData }) {
+  const [currentPoints, setCurrentPoints] = useState(userData.point);
+
+  useEffect(() => {
+    // Calculate the increment per second (10 points per day)
+    const incrementPerSecond = 10 / (24 * 60 * 60); // 10 points per day
+    const userRef = doc(db, 'users', userData.id); // Reference to the user's document in Firestore
+
+    const interval = setInterval(async () => {
+      setCurrentPoints(prevPoints => {
+        const newPoints = prevPoints + incrementPerSecond;
+
+        // Update the database with the new points
+        updateDoc(userRef, { point: newPoints.toFixed(5) }).catch((error) => {
+          console.error("Error updating points: ", error);
+        });
+
+        return newPoints;
+      });
+    }, 1000); // Update every second
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [userData.id]);
+
+  // Format the points to show five decimal places
+  const formattedPoints = currentPoints.toFixed(5);
+
+  // Split the points to apply different colors
+  const [integerPart, decimalPart] = formattedPoints.split('.');
+
+  return (
+    <div className='h-10 flex flex-col justify-center items-center py-24'>
+      <img className='w-52' src={mounttechCoin} alt="" />
+      <h2>
+        <span style={{ color: 'white' }}>{integerPart}</span>
+        <span style={{ color: 'yellow' }}>.{decimalPart}</span>
+      </h2>
     </div>
   );
 }
@@ -506,7 +549,7 @@ function Friends({ referralLink, onClose }) {
 
   return (
     <div className="fixed w-full h-full bg-slate-950 z-50 opacity-90 top-0 left-0 flex flex-col items-center justify-center">
-      <h2 className="text-white">Share this link with your friends:</h2>
+      <h2 className="text-white uppercase">Invite Friends and get more $MTT</h2>
       <div className="relative">
         <button
           className='w-72 bg-yellow-500 my-6 rounded-full flex flex-row justify-around px-5 py-2'
