@@ -416,7 +416,7 @@ function Tasks({ userData }) {
               </a>
           </li>
           <li>
-          <a href="https://youtube.com/@mounttechsolutions?si=WTlV_RfZF0q7ApOs" target="_blank" rel="noopener noreferrer">
+          <a href="https://youtube.com/@mounttechsolutions" target="_blank" rel="noopener noreferrer">
             <button
               className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
               onClick={() => handleTaskClick('Follow our Youtube page')}
