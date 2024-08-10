@@ -153,11 +153,11 @@ function App() {
 
 function CongratulationsPopup({ onClose }) {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[100]">
+    <div className="fixed inset-0 flex items-center justify-center bg-black z-[100]">
       <div className="bg-slate-950 p-6 rounded shadow-lg text-center">
-        <img src={logo} alt="Logo" className="mx-auto mb-4 w-32 animate-bounce" />
+        <img src={mounttechCoin} alt="Logo" className="mx-auto mb-4 w-32 animate-spinSlow" />
         <h2 className="text-xl font-semibold mb-2 text-white">Congratulations!</h2>
-        <p className="mb-4 text-white">You just earned 5000 points.</p>
+        <p className="mb-4 text-white">Congratulation you have earned 5000 Points <br/> Points can be redeemed for $MTT once a snapshort has been taken of the leaderboard</p>
         <button 
           className="px-4 py-2 bg-yellow-400 text-white rounded hover:bg-yellow-500"
           onClick={onClose}
@@ -165,6 +165,43 @@ function CongratulationsPopup({ onClose }) {
           Close
         </button>
       </div>
+    </div>
+  );
+}
+
+function LeadershipBoard({ userData }) {
+  const [leaderboard, setLeaderboard] = useState([]);
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        const usersCollection = collection(db, 'users');
+        const usersSnapshot = await getDocs(usersCollection);
+        const usersList = usersSnapshot.docs.map(doc => doc.data());
+
+        // Sort users by points in descending order
+        const rankedUsers = usersList.sort((a, b) => b.point - a.point);
+
+        setLeaderboard(rankedUsers);
+      } catch (e) {
+        console.error("Error fetching leaderboard: ", e);
+      }
+    };
+
+    fetchLeaderboard();
+  }, []);
+
+  return (
+    <div className="w-full mx-3 mt-10 xl:mx-12">
+      <h2 className="text-white text-2xl mb-4">Leadership Board</h2>
+      <ul>
+        {leaderboard.map((user, index) => (
+          <li key={index} className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2">
+            <span className="text-black">{index + 1}. {user.name}</span>
+            <span className="float-right text-black">{user.point} points</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -231,6 +268,9 @@ function Home({ userData }) {
         <div className="w-full mt-20 xl:mx-20 h-auto border-white border-b-2">
           <Tasks userData={userData}/>
         </div>
+        <div className="w-full mt-20 xl:mx-20 h-auto border-white border-b-2">
+          <LeadershipBoard />
+        </div>
         <div className="w-full mb-2 xl:mx-20 h-auto">
           <Reward userData={userData} />
         </div>
@@ -275,38 +315,32 @@ function HomeSection({children}) {
   );
 }
 
-
-function Tasks({ userData, setUserData }) {
-  const handleTaskClick = async (taskName, taskUrl) => {
-    if (!userData) return;
-
+function Tasks({ userData }) {
+  const handleTaskClick = async (task) => {
     try {
-      const userRef = doc(db, "users", userData.id);
-      const userDoc = await getDoc(userRef);
+      const userRef = query(collection(db, "users"), where("id", "==", userData.id));
+      const querySnapshot = await getDocs(userRef);
 
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        const completedTasks = userData.completedTasks || {};
+      if (!querySnapshot.empty) {
+        const docSnap = querySnapshot.docs[0]; // Assuming only one document matches the query
+        const docRef = doc(db, "users", docSnap.id);
+        const userTasks = docSnap.data().completedTasks || [];
 
-        if (completedTasks[taskName]) {
-          alert('You have already completed this task.');
-          return;
+        if (userTasks.includes(task)) {
+          alert(`You have already completed the task: ${task}`);
+        } else {
+          const newPoints = (userData.point || 0) + 500;
+          const newTasks = [...userTasks, task];
+
+          await updateDoc(docRef, { 
+            point: newPoints,
+            completedTasks: newTasks
+          });
+
+          alert(`500 points added for completing the task: ${task}`);
         }
-
-        const updatedPoints = userData.point + 500;
-        const updatedCompletedTasks = {
-          ...completedTasks,
-          [taskName]: true
-        };
-
-        await updateDoc(userRef, {
-          point: updatedPoints,
-          completedTasks: updatedCompletedTasks
-        });
-
-        setUserData({ ...userData, point: updatedPoints, completedTasks: updatedCompletedTasks });
-        localStorage.setItem('userData', JSON.stringify({ ...userData, point: updatedPoints, completedTasks: updatedCompletedTasks }));
-        alert('Points added successfully!');
+      } else {
+        alert('User not found.');
       }
     } catch (error) {
       console.error("Error updating points: ", error);
@@ -320,9 +354,9 @@ function Tasks({ userData, setUserData }) {
         <h3 className='text-white'>Tasks (500 points each)</h3>
         <ul>
           <li>
-            <button 
+            <button
               className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
-              onClick={() => handleTaskClick('Follow our Twitter account', 'https://x.com/Mounttechsol1?t=bfEdrzQCM6cq2mwq8oF0aw&s=09')}
+              onClick={() => handleTaskClick('Follow our Twitter account')}
             >
               <h3>Follow our Twitter account</h3>
               <a href="https://x.com/Mounttechsol1?t=bfEdrzQCM6cq2mwq8oF0aw&s=09" target="_blank" rel="noopener noreferrer">
@@ -331,9 +365,9 @@ function Tasks({ userData, setUserData }) {
             </button>
           </li>
           <li>
-            <button 
+            <button
               className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
-              onClick={() => handleTaskClick('Follow our Telegram announcement page', 'https://t.me/mounttechcolutions')}
+              onClick={() => handleTaskClick('Follow our Telegram announcement page')}
             >
               <h3>Follow our Telegram announcement</h3>
               <a href="https://t.me/mounttechcolutions" target="_blank" rel="noopener noreferrer">
@@ -342,14 +376,22 @@ function Tasks({ userData, setUserData }) {
             </button>
           </li>
           <li>
-            <button 
+            <button
               className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
-              onClick={() => handleTaskClick('Follow our Telegram community', 'https://t.me/+o0-w-_44_rdkYTQ0')}
+              onClick={() => handleTaskClick('Follow our Telegram community')}
             >
               <h3>Follow our Telegram community</h3>
               <a href="https://t.me/+o0-w-_44_rdkYTQ0" target="_blank" rel="noopener noreferrer">
                 <i className="bi bi-telegram"></i>
               </a>
+            </button>
+          </li>
+          <li>
+            <button
+              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
+            >
+              <h3>Play to earn</h3>
+              <i class="bi bi-joystick"></i>
             </button>
           </li>
         </ul>
@@ -472,9 +514,18 @@ function ButtonBar({ onFriendsClick }) {
   return (
     <div className='fixed bottom-0 w-full h-20 xl:mx-20 bg-slate-950'>
       <div className='flex justify-around items-center'>
-        <button className='text-white'><i className="bi bi-house-fill text-2xl"></i></button>
-        <button className='text-white'><i className="bi bi-bar-chart-fill text-2xl"></i></button>
-        <button className='text-white' onClick={onFriendsClick}><i className="bi bi-people-fill text-2xl"></i></button>
+        <button className='text-white'>
+          <i className="bi bi-house-fill text-2xl"></i>
+          <h4>Home</h4>
+          </button>
+        <button className='text-white'>
+          <i className="bi bi-bar-chart-fill text-2xl"></i>
+          <h4>Leadership board</h4>
+          </button>
+        <button className='text-white' onClick={onFriendsClick}>
+          <i className="bi bi-people-fill text-2xl"></i>
+          <h4>Friends</h4>
+          </button>
       </div>
     </div>
   );
