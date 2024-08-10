@@ -289,7 +289,7 @@ function Home({ userData }) {
       <Navbar userData={userData} />
       <div className="flex flex-col items-center">
         <div className="w-full mt-20 xl:mx-20 h-auto border-white border-b-2">
-        <UpdateUserPointDaily userData={userData}/>
+        {/* <UpdateUserPointDaily userData={userData}/> */}
           <Tasks userData={userData} />
         </div>
         {showLeadershipBoard && (
@@ -341,46 +341,6 @@ function HomeSection({children}) {
   );
 }
 
-function UpdateUserPointDaily({ userData }) {
-  const [currentPoints, setCurrentPoints] = useState(userData.point);
-
-  useEffect(() => {
-    // Calculate the increment per second (10 points per day)
-    const incrementPerSecond = 10 / (24 * 60 * 60); // 10 points per day
-    const userRef = doc(db, 'users', userData.id); // Reference to the user's document in Firestore
-
-    const interval = setInterval(async () => {
-      setCurrentPoints(prevPoints => {
-        const newPoints = prevPoints + incrementPerSecond;
-
-        // Update the database with the new points
-        updateDoc(userRef, { point: newPoints.toFixed(5) }).catch((error) => {
-          console.error("Error updating points: ", error);
-        });
-
-        return newPoints;
-      });
-    }, 1000); // Update every second
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [userData.id]);
-
-  // Format the points to show five decimal places
-  const formattedPoints = currentPoints.toFixed(5);
-
-  // Split the points to apply different colors
-  const [integerPart, decimalPart] = formattedPoints.split('.');
-
-  return (
-    <div className='h-10 flex flex-col justify-center items-center py-24'>
-      <img className='w-52' src={mounttechCoin} alt="" />
-      <h2>
-        <span style={{ color: 'white' }}>{integerPart}</span>
-        <span style={{ color: 'yellow' }}>.{decimalPart}</span>
-      </h2>
-    </div>
-  );
-}
 
 function Tasks({ userData }) {
   const handleTaskClick = async (task) => {
@@ -418,46 +378,46 @@ function Tasks({ userData }) {
   return (
     <div className='w-full mt-20 xl:mx-20 h-auto border-white border-b-2'>
       <div className='mx-3'>
-        <h3 className='text-white'>Tasks (500 points each)</h3>
+        <h3 className='text-white'>Tasks</h3>
         <ul>
           <li>
+          <a href="https://x.com/Mounttechsol1?t=bfEdrzQCM6cq2mwq8oF0aw&s=09" target="_blank" rel="noopener noreferrer">
             <button
               className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
               onClick={() => handleTaskClick('Follow our Twitter account')}
             >
-              <h3>Follow our Twitter account</h3>
-              <a href="https://x.com/Mounttechsol1?t=bfEdrzQCM6cq2mwq8oF0aw&s=09" target="_blank" rel="noopener noreferrer">
+              <h3 className='text-left'>Follow Mount Tech +500</h3>
                 <i className="bi bi-twitter"></i>
-              </a>
             </button>
+            </a>
           </li>
           <li>
+          <a href="https://t.me/mounttechcolutions" target="_blank" rel="noopener noreferrer">
             <button
               className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
               onClick={() => handleTaskClick('Follow our Telegram announcement page')}
             >
-              <h3>Follow our Telegram announcement</h3>
-              <a href="https://t.me/mounttechcolutions" target="_blank" rel="noopener noreferrer">
+              <h3 className='text-left'>Subscribe to Mount Tech Channel +500</h3>
                 <i className="bi bi-telegram"></i>
-              </a>
             </button>
+              </a>
           </li>
           <li>
+          <a href="https://t.me/+o0-w-_44_rdkYTQ0" target="_blank" rel="noopener noreferrer">
             <button
               className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
               onClick={() => handleTaskClick('Follow our Telegram community')}
             >
-              <h3>Follow our Telegram community</h3>
-              <a href="https://t.me/+o0-w-_44_rdkYTQ0" target="_blank" rel="noopener noreferrer">
+              <h3 className='text-left'>Join Mount Tech Community +500</h3>
                 <i className="bi bi-telegram"></i>
-              </a>
             </button>
+              </a>
           </li>
           <li>
             <button
               className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
             >
-              <h3>Play to earn</h3>
+              <h3>Play to earn +500</h3>
               <i class="bi bi-joystick"></i>
             </button>
           </li>
@@ -549,7 +509,7 @@ function Friends({ referralLink, onClose }) {
 
   return (
     <div className="fixed w-full h-full bg-slate-950 z-50 opacity-90 top-0 left-0 flex flex-col items-center justify-center">
-      <h2 className="text-white uppercase">Invite Friends and get more $MTT</h2>
+      <h2 className="text-white uppercase">Invite Friends and get more $MTT POINT</h2>
       <div className="relative">
         <button
           className='w-72 bg-yellow-500 my-6 rounded-full flex flex-row justify-around px-5 py-2'
