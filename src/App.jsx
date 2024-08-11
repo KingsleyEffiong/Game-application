@@ -223,13 +223,6 @@ function LeadershipBoard({ userData, onLeadershipClick }) {
 
 
 
-
-
-
-
-
-
-
 function Home({ userData }) {
   const [showFriends, setShowFriends] = useState(false);
   const [showLeadershipBoard, setShowLeadershipBoard] = useState(false);
@@ -294,12 +287,14 @@ function Tasks({ userData }) {
           const newPoints = (userData.point || 0) + 500;
           const newTasks = [...userTasks, task];
 
-          await updateDoc(docRef, { 
-            point: newPoints,
-            completedTasks: newTasks
-          });
-
-          alert(`500 points added for completing this task`);
+          setTimeout(async function(){
+            await updateDoc(docRef, { 
+              point: newPoints,
+              completedTasks: newTasks
+            });
+  
+            alert(`500 points added for completing this task`);
+          },60000);
         }
       } else {
         alert('User not found.');
