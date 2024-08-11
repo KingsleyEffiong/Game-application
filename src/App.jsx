@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import welcomeBackground from './images/good health, more $mtt !_20240808_005428_0000.png';
 import mounttechCoin from './images/mount tech silver.png';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
-import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
 
 import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
@@ -63,7 +63,6 @@ function App() {
               setUserData(updatedUserData);
               setShowPopup(false);
               localStorage.setItem('userData', JSON.stringify(updatedUserData));
-              console.log("User data updated from polling");
             }
           });
         }
@@ -90,7 +89,7 @@ function App() {
       setUserData(newUser);
       setShowPopup(true);
     } catch (error) {
-      console.error("Error saving user data: ", error);
+      alert("Error saving user data: ", error);
     }
   };
 
@@ -126,11 +125,11 @@ function App() {
           localStorage.setItem('userData', JSON.stringify(updatedUserData));
           window.localStorage.setItem('userDataUpdated', Date.now().toString());
   
-          console.log(`Added 10 points to user with ID: ${refId}`);
+          alert(`A user has clicked on your referral link`);
         });
       }
     } catch (error) {
-      console.error("Error handling referral: ", error);
+      alert("Error handling referral: ", error);
     }
   };
   
@@ -206,12 +205,6 @@ function LeadershipBoard({ userData, onLeadershipClick }) {
   </span>
   <span className="float-right text-black">{userData.point} points</span>
 </li>
-
-          {/* {userRank && (
-            <div className="text-white text-center mb-4">
-              <h3 className="text-xl">Your Rank: {userRank}</h3>
-            </div>
-          )} */}
         </div>
         <div className='flex justify-between items-center w-full'>
           <h5 className="text-white mb-4">Top Chat</h5>
@@ -254,10 +247,12 @@ function Logo() {
 
 function WelcomeSection({ handleGetStarted }) {
   const [input, setInput] = useState('');
+  const [IsLoading, setIsLoading] = useState(false);
 
   const saveInput = (e) => {
     e.preventDefault();
     if (input.trim()) {
+      setIsLoading(true)
       handleGetStarted(input);
     }
   };
@@ -280,9 +275,9 @@ function WelcomeSection({ handleGetStarted }) {
         />
         <button
           className='mx-3 uppercase inline-block bg-yellow-400 rounded-full px-4 py-2 hover:bg-yellow-400 transition-colors duration-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
-          onClick={saveInput}
+          onClick={saveInput} disabled={IsLoading}
         >
-          Get started
+          {IsLoading ? 'Please wait........' : 'Get Started'}
         </button>
       </div>
     </div>
@@ -367,7 +362,7 @@ function Tasks({ userData }) {
         const userTasks = docSnap.data().completedTasks || [];
 
         if (userTasks.includes(task)) {
-          alert(`You have already completed the task: ${task}`);
+          alert(`You have already completed this task`);
         } else {
           const newPoints = (userData.point || 0) + 500;
           const newTasks = [...userTasks, task];
@@ -377,14 +372,13 @@ function Tasks({ userData }) {
             completedTasks: newTasks
           });
 
-          alert(`500 points added for completing the task: ${task}`);
+          alert(`500 points added for completing this task`);
         }
       } else {
         alert('User not found.');
       }
     } catch (error) {
-      console.error("Error updating points: ", error);
-      alert('Error updating points.');
+      alert('There is a proble updating your point, pls check your internet connection.');
     }
   };
 
@@ -483,13 +477,14 @@ function Reward({userData}) {
 
 function SubmitWalletAddress({ userData }) {
   const [walletAddress, setWalletAddress] = useState('');
-
+  const [IsDisable, setIsDisabled] = useState(false);
+  const [IsLoading, setIsLoading] = useState(false);
   const handleSubmit = async () => {
     if (walletAddress.trim() === '') {
       alert('Please enter a wallet address.');
       return;
     }
-
+    setIsLoading(true);
     try {
       // Use the document ID as the reference for updating the user
       const userRef = query(collection(db, "users"), where("id", "==", userData.id));
@@ -501,32 +496,38 @@ function SubmitWalletAddress({ userData }) {
 
         await updateDoc(docRef, { walletAddress: walletAddress });
         alert('Wallet address submitted successfully!');
+        setWalletAddress('Your wallet has been submitted successfully');
+        setIsDisabled(true);
       } else {
         alert('User not found.');
       }
     } catch (error) {
       console.error("Error submitting wallet address: ", error);
       alert('Error submitting wallet address.');
+    }finally{
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="w-full mb-2 md:mx-20 h-auto">
-      <div className="mx-3">
+      <div className="w-full mb-2 xl:mx-20 h-auto mx-3">
         <h3 className="text-white">Submit your wallet address</h3>
         <input
           className='w-56  md:w-80 my-3 rounded-full px-4 py-2 bg-slate-300 text-sm placeholder:text-stone-950 focus:outline-none focus:ring focus:ring-yellow-400 border-none focus:ring-opacity-50'
           type="text"
           placeholder='BSC (Bep 20) wallet address'
           value={walletAddress}
+          disabled ={IsDisable}
           onChange={(e) => setWalletAddress(e.target.value)}
         />
         <button
-          className='mx-3 uppercase inline-block bg-yellow-400 rounded-full px-4 py-2 hover:bg-yellow-400 transition-colors duration-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
-          onClick={handleSubmit}
-        >
-          Submit
-        </button>
+        className='mx-3 uppercase inline-block bg-yellow-400 rounded-full px-4 py-2 hover:bg-yellow-400 transition-colors duration-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+        onClick={handleSubmit}
+        disabled={IsDisable || IsLoading}
+      >
+        {IsLoading ? 'Please wait.........' : 'Submit'}
+      </button>
       </div>
     </div>
   );
@@ -542,7 +543,7 @@ function Friends({ referralLink, onClose }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000); // Reset copied state after 2 seconds
     }).catch((err) => {
-      console.error('Failed to copy referral link:', err);
+      alert('Failed to copy referral link');
     });
   };
 
