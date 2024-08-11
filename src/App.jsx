@@ -303,7 +303,7 @@ function Tasks({ userData }) {
         alert('User not found.');
       }
     } catch (error) {
-      alert('There is a proble updating your point, pls check your internet connection.');
+      alert('There is a problem updating your point, pls check your internet connection.');
     }
   };
 
