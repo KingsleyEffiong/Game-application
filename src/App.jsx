@@ -14,14 +14,17 @@ import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBzaz4dSfndXEVbA7KVok43cx1jUltglDE",
-  authDomain: "mounttech-4bd7e.firebaseapp.com",
-  projectId: "mounttech-4bd7e",
-  storageBucket: "mounttech-4bd7e.appspot.com",
-  messagingSenderId: "936990456790",
-  appId: "1:936990456790:web:9bffc733845b681a20c277",
-  measurementId: "G-1DKLMNX3QT"
+
+  apiKey: "AIzaSyDouH-h62GP84wQjZqscMW-9hL3AWbGkCY",
+  authDomain: "mount-tech-solutions.firebaseapp.com",
+  projectId: "mount-tech-solutions",
+  storageBucket: "mount-tech-solutions.appspot.com",
+  messagingSenderId: "782166734038",
+  appId: "1:782166734038:web:dc9b60e809ecb3564f8577",
+  measurementId: "G-H7J103HCNV"
+
 };
+
 
 
 // Initialize Firebase
@@ -287,14 +290,14 @@ function Tasks({ userData }) {
           const newPoints = (userData.point || 0) + 500;
           const newTasks = [...userTasks, task];
 
+           alert(`Point won't be added until you complete this task: and if you have done so, wait for your point to be updated within a few minute`);
           setTimeout(async function(){
             await updateDoc(docRef, { 
               point: newPoints,
               completedTasks: newTasks
             });
-  
             alert(`500 points added for completing this task`);
-          },60000);
+          },170000);
         }
       } else {
         alert('User not found.');
