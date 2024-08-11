@@ -296,7 +296,7 @@ function Tasks({ userData }) {
               point: newPoints,
               completedTasks: newTasks
             });
-            alert(`500 points added for completing this task`);
+            alert(`500 points added for completing this task: ${task}`);
           },170000);
         }
       } else {
