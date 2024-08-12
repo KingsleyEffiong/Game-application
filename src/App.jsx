@@ -164,10 +164,9 @@ function App() {
   );
 }
 
-
-
 function LeadershipBoard({ userData, onLeadershipClick, SetShowPopup, SetpopupMessage }) {
   const [leaderboard, setLeaderboard] = useState([]);
+  const [loading, SetLoading] = useState(true);
   const [userRank, setUserRank] = useState(null);
 
   useEffect(() => {
@@ -186,7 +185,9 @@ function LeadershipBoard({ userData, onLeadershipClick, SetShowPopup, SetpopupMe
         setUserRank(userIndex !== -1 ? userIndex + 1 : null); // Rank is 1-based
       } catch (e) {
         SetShowPopup(true);
-        SetpopupMessage(`Error fetching leaderboard:, ${e.message}`);
+        SetpopupMessage(`Error fetching leaderboard: ${e.message}`);
+      } finally {
+        SetLoading(false); // Set loading to false once data is fetched or in case of an error
       }
     };
 
@@ -199,11 +200,11 @@ function LeadershipBoard({ userData, onLeadershipClick, SetShowPopup, SetpopupMe
         <div className="text-white mb-8">
           <h2 className="text-white text-2xl mb-4 uppercase text-center">Leadership Board</h2>
           <li className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2">
-  <span className="text-black">
-    {userRank ? `${userRank}` : 'Unranked'}. {userData.name}
-  </span>
-  <span className="float-right text-black">{userData.point} points</span>
-</li>
+            <span className="text-black">
+              {userRank ? `${userRank}` : 'Unranked'}. {userData.name}
+            </span>
+            <span className="float-right text-black">{userData.point} points</span>
+          </li>
         </div>
         <div className='flex justify-between items-center w-full'>
           <h5 className="text-white mb-4">Top Chat</h5>
@@ -215,17 +216,23 @@ function LeadershipBoard({ userData, onLeadershipClick, SetShowPopup, SetpopupMe
           </button>
         </div>
         <ul>
-  {(!leaderboard || leaderboard.length === 0) ? (
-    <li className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'>No user available</li>
-  ) : (
-    leaderboard.slice(0, 100).map((user, index) => (
-      <li key={index} className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2">
-        <span className="text-black">{index + 1}. {user.name}</span>
-        <span className="float-right text-black">{user.point} points</span>
-      </li>
-    ))
-  )}
-</ul>
+          {loading ? (
+            <li className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'>
+              Loading users...
+            </li>
+          ) : leaderboard.length === 0 ? (
+            <li className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'>
+              No user available
+            </li>
+          ) : (
+            leaderboard.slice(0, 100).map((user, index) => (
+              <li key={index} className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2">
+                <span className="text-black">{index + 1}. {user.name}</span>
+                <span className="float-right text-black">{user.point} points</span>
+              </li>
+            ))
+          )}
+        </ul>
       </div>
     </div>
   );
