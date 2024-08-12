@@ -408,7 +408,8 @@ function SubmitWalletAddress({ userData, SetShowPopup, SetpopupMessage }) {
   const [IsLoading, setIsLoading] = useState(false);
   const handleSubmit = async () => {
     if (walletAddress.trim() === '') {
-      alert('Please enter a wallet address.');
+      SetShowPopup(true);
+        SetpopupMessage(`Please enter a wallet address.`);
       return;
     }
     setIsLoading(true);
