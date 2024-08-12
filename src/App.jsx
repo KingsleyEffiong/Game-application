@@ -33,7 +33,8 @@ const db = getFirestore(app);
 
 function App() {
   const [userData, setUserData] = useState(null);
-  const [showPopup, setShowPopup] = useState(false); 
+  const [showPopup, SetShowPopup] = useState(false); 
+  const [popupMesage, SetpopupMessage] = useState('');
 
   useEffect(() => {
     // Load userData from localStorage on initial render
@@ -69,7 +70,7 @@ function App() {
             if (updatedUserData.point !== userData.point) {
               // Update state and localStorage with new data
               setUserData(updatedUserData);
-              setShowPopup(false);
+              SetShowPopup(false);
               localStorage.setItem('userData', JSON.stringify(updatedUserData));
             }
           });
@@ -95,9 +96,11 @@ function App() {
       };
       await addDoc(collection(db, "users"), newUser);
       setUserData(newUser);
-      setShowPopup(true);
+      SetShowPopup(true);
+      SetpopupMessage('Congratulation!!!!! You have earned 5000 Points! Points can be redeemed for $MTT once a snapshot has been taken of the leaderboard.')
     } catch (error) {
-      alert("Error saving user data: ", error);
+      SetShowPopup(true);
+      SetpopupMessage(`Error saving user data: ", ${error.message}`);
     }
   };
 
@@ -132,18 +135,21 @@ function App() {
   
           localStorage.setItem('userData', JSON.stringify(updatedUserData));
           window.localStorage.setItem('userDataUpdated', Date.now().toString());
-  
-          alert(`You were referred by a user`);
         });
       }
     } catch (error) {
-      alert("Error handling referral: ", error);
+      SetShowPopup(true);
+      SetpopupMessage(`${error.message}`);
     }
   };
-  
+
   return (
     <Router>
-      {showPopup && <CongratulationsPopup onClose={() => setShowPopup(false)} />}
+      {showPopup && <CongratulationsPopup onClose={() => setShowPopup(false)}>
+          <p className="mb-4 text-white">
+            {popupMesage}
+          </p>
+        </CongratulationsPopup>}
       <Routes>
         <Route index
           path="/" 
@@ -151,7 +157,7 @@ function App() {
         />
         <Route index
           path="/dashboard" 
-          element={userData ? <Home userData={userData} /> : <Navigate to="/" />} 
+          element={userData ? <Home userData={userData} showPopup={showPopup} popupMesage={popupMesage} SetShowPopup={SetShowPopup} SetpopupMessage={SetpopupMessage} /> : <Navigate to="/" />} 
         />
       </Routes>
     </Router>
@@ -160,7 +166,7 @@ function App() {
 
 
 
-function LeadershipBoard({ userData, onLeadershipClick }) {
+function LeadershipBoard({ userData, onLeadershipClick, SetShowPopup, SetpopupMessage }) {
   const [leaderboard, setLeaderboard] = useState([]);
   const [userRank, setUserRank] = useState(null);
 
@@ -179,7 +185,8 @@ function LeadershipBoard({ userData, onLeadershipClick }) {
         const userIndex = rankedUsers.findIndex(user => user.id === userData.id);
         setUserRank(userIndex !== -1 ? userIndex + 1 : null); // Rank is 1-based
       } catch (e) {
-        console.error("Error fetching leaderboard: ", e);
+        SetShowPopup(true);
+        SetpopupMessage(`Error fetching leaderboard:, ${e.message}`);
       }
     };
 
@@ -226,7 +233,7 @@ function LeadershipBoard({ userData, onLeadershipClick }) {
 
 
 
-function Home({ userData }) {
+function Home({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage }) {
   const [showFriends, setShowFriends] = useState(false);
   const [showLeadershipBoard, setShowLeadershipBoard] = useState(false);
 
@@ -240,17 +247,17 @@ function Home({ userData }) {
       <div className="flex flex-col items-center">
         <div className="w-full mt-20 xl:mx-20 h-auto border-white border-b-2">
         <UpdateUserPointDaily userData={userData}/>
-          <Tasks userData={userData} />
+          <Tasks userData={userData} showPopup={showPopup} popupMesage={popupMesage} SetShowPopup={SetShowPopup} SetpopupMessage={SetpopupMessage}/>
         </div>
         {showLeadershipBoard && (
           <div className="w-full mt-20 xl:mx-20 h-auto border-white border-b-2">
-            <LeadershipBoard userData={userData} onLeadershipClick={handleLeadershipClick} />
+            <LeadershipBoard userData={userData} onLeadershipClick={handleLeadershipClick} SetShowPopup={SetShowPopup} SetpopupMessage={SetpopupMessage} />
           </div>
         )}
         <div className="w-full mb-2 xl:mx-20 h-auto">
           <Reward userData={userData} />
         </div>
-        <SubmitWalletAddress userData={userData} />
+        <SubmitWalletAddress userData={userData} SetShowPopup={SetShowPopup} SetpopupMessage={SetpopupMessage} />
         <Overlay />
         {showFriends && (
           <Friends
@@ -273,7 +280,7 @@ function HomeSection({children}) {
 }
 
 
-function Tasks({ userData }) {
+function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage }) {
   const handleTaskClick = async (task) => {
     try {
       const userRef = query(collection(db, "users"), where("id", "==", userData.id));
@@ -285,29 +292,39 @@ function Tasks({ userData }) {
         const userTasks = docSnap.data().completedTasks || [];
 
         if (userTasks.includes(task)) {
-          alert(`You have already completed this task`);
+          SetShowPopup(true);
+          SetpopupMessage(`You have already completed this task`);
         } else {
           const newPoints = (userData.point || 0) + 500;
           const newTasks = [...userTasks, task];
-
-           alert(`Point won't be added until you complete this task: and if you have done so, wait for your point to be updated within a few minute`);
+          SetShowPopup(true);
+          SetpopupMessage(`Point won't be added until you complete this task: and if you have done so, wait for your point to be updated within a few minute`);
           setTimeout(async function(){
             await updateDoc(docRef, { 
               point: newPoints,
               completedTasks: newTasks
             });
-            alert(`500 points added for completing this task: ${task}`);
-          },170000);
+            SetShowPopup(true);
+            SetpopupMessage(`500 points added for completing this task: ${task}`);
+          },30000);
         }
       } else {
-        alert('User not found.');
+        SetShowPopup(true);
+        SetpopupMessage(`User not found.`);
       }
     } catch (error) {
-      alert('There is a problem updating your point, pls check your internet connection.');
+      SetShowPopup(true);
+      SetpopupMessage(`There is a problem updating your point, pls check your internet connection.'`);
     }
   };
 
   return (
+    <>
+     {showPopup && <CongratulationsPopup onClose={() => SetShowPopup(false)}>
+          <p className="mb-4 text-white">
+            {popupMesage}
+          </p>
+        </CongratulationsPopup>}
     <div className='w-full mt-20 xl:mx-20 h-auto border-white border-b-2'>
       <div className='mx-3'>
         <h3 className='text-white'>Tasks</h3>
@@ -315,10 +332,10 @@ function Tasks({ userData }) {
           <li>
           <a href="https://x.com/Mounttechsol1?t=bfEdrzQCM6cq2mwq8oF0aw&s=09" target="_blank" rel="noopener noreferrer">
             <button
-              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
+              className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2'
               onClick={() => handleTaskClick('Follow our Twitter account')}
             >
-              <h3 className='text-left'>Follow Mount Tech +500</h3>
+              <h3 className='text-center w-80'>Follow Mount Tech +500</h3>
                 <i className="bi bi-twitter"></i>
             </button>
             </a>
@@ -326,10 +343,10 @@ function Tasks({ userData }) {
           <li>
           <a href="https://t.me/mounttechcolutions" target="_blank" rel="noopener noreferrer">
             <button
-              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
+              className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2'
               onClick={() => handleTaskClick('Follow our Telegram announcement page')}
             >
-              <h3 className='text-left'>Subscribe to Mount Tech Channel +500</h3>
+              <h3 className='text-center w-80'>Subscribe to Mount Tech Channel +500</h3>
                 <i className="bi bi-telegram"></i>
             </button>
               </a>
@@ -337,10 +354,10 @@ function Tasks({ userData }) {
           <li>
           <a href="https://youtube.com/@mounttechsolutions" target="_blank" rel="noopener noreferrer">
             <button
-              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
+              className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2'
               onClick={() => handleTaskClick('Follow our Youtube page')}
             >
-              <h3 className='text-left'>Subscribe to Mount Tech Channel +500</h3>
+              <h3 className='text-center w-80'>Subscribe to Mount Tech Channel +500</h3>
                 <i className="bi bi-youtube"></i>
             </button>
               </a>
@@ -348,25 +365,27 @@ function Tasks({ userData }) {
           <li>
           <a href="https://t.me/+o0-w-_44_rdkYTQ0" target="_blank" rel="noopener noreferrer">
             <button
-              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
+              className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2'
               onClick={() => handleTaskClick('Follow our Telegram community')}
             >
-              <h3 className='text-left'>Join Mount Tech Community +500</h3>
+              <h3 className='text-center w-80'>Join Mount Tech Community +500</h3>
                 <i className="bi bi-telegram"></i>
             </button>
               </a>
           </li>
           <li>
             <button
-              className='w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2'
+              className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2'
             >
-              <h3>Play to earn +500</h3>
-              <i class="bi bi-joystick"></i>
+              <h3 className='text-center w-80'>Play to earn +500</h3>
+              <i className="bi bi-joystick"></i>
             </button>
           </li>
         </ul>
       </div>
     </div>
+    </>
+    
   );
 }
 
@@ -376,7 +395,7 @@ function Tasks({ userData }) {
 
 
 
-function SubmitWalletAddress({ userData }) {
+function SubmitWalletAddress({ userData, SetShowPopup, SetpopupMessage }) {
   const [walletAddress, setWalletAddress] = useState('');
   const [IsDisable, setIsDisabled] = useState(false);
   const [IsLoading, setIsLoading] = useState(false);
@@ -396,15 +415,18 @@ function SubmitWalletAddress({ userData }) {
         const docRef = doc(db, "users", docSnap.id);
 
         await updateDoc(docRef, { walletAddress: walletAddress });
-        alert('Wallet address submitted successfully!');
+        SetShowPopup(true);
+        SetpopupMessage(`Wallet address submitted successfully!`);
         setWalletAddress('Your wallet has been submitted successfully');
         setIsDisabled(true);
       } else {
-        alert('User not found.');
+        SetShowPopup(true);
+        SetpopupMessage(`User not found.`);
       }
     } catch (error) {
       console.error("Error submitting wallet address: ", error);
-      alert('Error submitting wallet address.');
+      SetShowPopup(true);
+      SetpopupMessage(`Error submitting wallet address.`);
     }finally{
       setIsLoading(false);
     }
@@ -433,8 +455,6 @@ function SubmitWalletAddress({ userData }) {
     </div>
   );
 }
-
-
 
 
 function Overlay() {
