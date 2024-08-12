@@ -335,7 +335,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
               className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2'
               onClick={() => handleTaskClick('Follow our Twitter account')}
             >
-              <h3 className='text-center w-80'>Follow Mount Tech +500</h3>
+              <h3 className='text-center w-72'>Follow Mount Tech +500</h3>
                 <i className="bi bi-twitter"></i>
             </button>
             </a>
@@ -346,7 +346,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
               className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2'
               onClick={() => handleTaskClick('Follow our Telegram announcement page')}
             >
-              <h3 className='text-center w-80'>Subscribe to Mount Tech Channel +500</h3>
+              <h3 className='text-center  w-72'>Subscribe to Mount Tech Channel +500</h3>
                 <i className="bi bi-telegram"></i>
             </button>
               </a>
@@ -357,7 +357,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
               className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2'
               onClick={() => handleTaskClick('Follow our Youtube page')}
             >
-              <h3 className='text-center w-80'>Subscribe to Mount Tech Channel +500</h3>
+              <h3 className='text-center w-72'>Subscribe to Mount Tech Channel +500</h3>
                 <i className="bi bi-youtube"></i>
             </button>
               </a>
@@ -368,7 +368,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
               className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2'
               onClick={() => handleTaskClick('Follow our Telegram community')}
             >
-              <h3 className='text-center w-80'>Join Mount Tech Community +500</h3>
+              <h3 className='text-center  w-72'>Join Mount Tech Community +500</h3>
                 <i className="bi bi-telegram"></i>
             </button>
               </a>
@@ -377,7 +377,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <button
               className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2'
             >
-              <h3 className='text-center w-80'>Play to earn +500</h3>
+              <h3 className='text-center  w-72'>Play to earn +500</h3>
               <i className="bi bi-joystick"></i>
             </button>
           </li>
