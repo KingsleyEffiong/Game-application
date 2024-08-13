@@ -1,5 +1,6 @@
 import './index.css';
 import { useState, useEffect } from 'react';
+// import PropTypes from 'prop-types';
 import WelcomeSection from './Components/WelcomeSection';
 import Navbar from './Components/Navbar';
 import CongratulationsPopup from './Components/CongratulationsPopup';
@@ -401,25 +402,52 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
 
 
 
-
 function SubmitWalletAddress({ userData, SetShowPopup, SetpopupMessage }) {
   const [walletAddress, setWalletAddress] = useState('');
-  const [IsDisable, setIsDisabled] = useState(false);
+  const [IsDisabled, setIsDisabled] = useState(false);
   const [IsLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const checkWalletAddress = async () => {
+      try {
+        const userRef = query(collection(db, "users"), where("id", "==", userData.id));
+        const querySnapshot = await getDocs(userRef);
+
+        if (!querySnapshot.empty) {
+          const docSnap = querySnapshot.docs[0];
+          const userWalletAddress = docSnap.data().walletAddress;
+
+          if (userWalletAddress) {
+            setWalletAddress('Your wallet has been submitted successfully');
+            setIsDisabled(true);
+          }
+        } else {
+          SetShowPopup(true);
+          SetpopupMessage(`User not found.`);
+        }
+      } catch (error) {
+        console.error("Error checking wallet address: ", error);
+        SetShowPopup(true);
+        SetpopupMessage(`Error checking wallet address.`);
+      }
+    };
+
+    checkWalletAddress();
+  }, [userData.id, SetShowPopup, SetpopupMessage]);
+
   const handleSubmit = async () => {
     if (walletAddress.trim() === '') {
       SetShowPopup(true);
-        SetpopupMessage(`Please enter a wallet address.`);
+      SetpopupMessage(`Please enter a wallet address.`);
       return;
     }
     setIsLoading(true);
     try {
-      // Use the document ID as the reference for updating the user
       const userRef = query(collection(db, "users"), where("id", "==", userData.id));
       const querySnapshot = await getDocs(userRef);
 
       if (!querySnapshot.empty) {
-        const docSnap = querySnapshot.docs[0]; // Assuming only one document matches the query
+        const docSnap = querySnapshot.docs[0];
         const docRef = doc(db, "users", docSnap.id);
 
         await updateDoc(docRef, { walletAddress: walletAddress });
@@ -435,7 +463,7 @@ function SubmitWalletAddress({ userData, SetShowPopup, SetpopupMessage }) {
       console.error("Error submitting wallet address: ", error);
       SetShowPopup(true);
       SetpopupMessage(`Error submitting wallet address.`);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   };
@@ -449,20 +477,21 @@ function SubmitWalletAddress({ userData, SetShowPopup, SetpopupMessage }) {
           type="text"
           placeholder='BSC (Bep 20) wallet address'
           value={walletAddress}
-          disabled ={IsDisable}
+          disabled={IsDisabled}
           onChange={(e) => setWalletAddress(e.target.value)}
         />
         <button
-        className='mx-3 uppercase inline-block bg-yellow-400 rounded-full px-4 py-2 hover:bg-yellow-400 transition-colors duration-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
-        onClick={handleSubmit}
-        disabled={IsDisable || IsLoading}
-      >
-        {IsLoading ? 'Please wait.........' : 'Submit'}
-      </button>
+          className='mx-3 uppercase inline-block bg-yellow-400 rounded-full px-4 py-2 hover:bg-yellow-400 transition-colors duration-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+          onClick={handleSubmit}
+          disabled={IsDisabled || IsLoading}
+        >
+          {IsLoading ? 'Please wait.........' : 'Submit'}
+        </button>
       </div>
     </div>
   );
 }
+
 
 
 function Overlay() {
