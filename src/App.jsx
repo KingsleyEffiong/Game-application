@@ -1,6 +1,5 @@
 import './index.css';
 import { useState, useEffect } from 'react';
-// import PropTypes from 'prop-types';
 import WelcomeSection from './Components/WelcomeSection';
 import Navbar from './Components/Navbar';
 import CongratulationsPopup from './Components/CongratulationsPopup';
@@ -10,12 +9,11 @@ import Reward from './Components/Reward';
 import ButtonBars from './Components/ButtonBars';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
 import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
-
 import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
+// Firebase configuration
 const firebaseConfig = {
-
   apiKey: "AIzaSyDouH-h62GP84wQjZqscMW-9hL3AWbGkCY",
   authDomain: "mount-tech-solutions.firebaseapp.com",
   projectId: "mount-tech-solutions",
@@ -23,10 +21,7 @@ const firebaseConfig = {
   messagingSenderId: "782166734038",
   appId: "1:782166734038:web:dc9b60e809ecb3564f8577",
   measurementId: "G-H7J103HCNV"
-
 };
-
-
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -85,8 +80,9 @@ function App() {
   const handleGetStarted = async (name) => {
     const uniqueId = `mt${uuidv4().slice(0, 10)}`;
     const point = 5000;
-    const referralLink = `${window.location.origin}?ref=${uniqueId}`;
-
+    const telegramUsername = "@testmounttech_bot"; 
+    const referralLink = `tg://resolve?domain=${telegramUsername}&start=${uniqueId}`;
+  
     try {
       const newUser = {
         id: uniqueId,
@@ -98,12 +94,13 @@ function App() {
       await addDoc(collection(db, "users"), newUser);
       setUserData(newUser);
       SetShowPopup(true);
-      SetpopupMessage('Congratulation!!!!! You have earned 5000 Points! Points can be redeemed for $MTT once a snapshot has been taken of the leaderboard.')
+      SetpopupMessage('Congratulations! You have earned 5000 Points! Points can be redeemed for $MTT once a snapshot has been taken of the leaderboard.');
     } catch (error) {
       SetShowPopup(true);
-      SetpopupMessage(`Error saving user data: ", ${error.message}`);
+      SetpopupMessage(`Error saving user data: ${error.message}`);
     }
   };
+  
 
   const handleReferral = async (refId) => {
     try {
@@ -143,10 +140,11 @@ function App() {
       SetpopupMessage(`${error.message}`);
     }
   };
+  
 
   return (
     <Router>
-      {showPopup && <CongratulationsPopup onClose={() => setShowPopup(false)}>
+      {showPopup && <CongratulationsPopup onClose={() => SetShowPopup(false)}>
           <p className="mb-4 text-white">
             {popupMesage}
           </p>
@@ -154,7 +152,7 @@ function App() {
       <Routes>
         <Route index
           path="/" 
-          element={userData ? <Navigate  to="/dashboard" /> : <WelcomeSection handleGetStarted={handleGetStarted} />} 
+          element={userData ? <Navigate to="/dashboard" /> : <WelcomeSection handleGetStarted={handleGetStarted} />} 
         />
         <Route index
           path="/dashboard" 
@@ -164,6 +162,7 @@ function App() {
     </Router>
   );
 }
+
 
 function LeadershipBoard({ userData, onLeadershipClick, SetShowPopup, SetpopupMessage }) {
   const [leaderboard, setLeaderboard] = useState([]);
