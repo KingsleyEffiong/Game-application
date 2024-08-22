@@ -6,6 +6,8 @@ import Bronze from './images/bronze_leadership-removebg-preview.png';
 import WelcomeSection from './Components/WelcomeSection';
 import Navbar from './Components/Navbar';
 import CongratulationsPopup from './Components/CongratulationsPopup';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import mounttechCoin from './images/mount tech silver.png';
 import UpdateUserPointDaily from './Components/UpdateUserPointDaily';
 import Friends from './Components/Friends';
@@ -761,6 +763,7 @@ function DailyTask({ userData, showDailyPoint,setShowDailyPoint }) {
         const data = userDoc.data();
         const lastClickTime = data.lastClickTime || {};
         const currentTime = new Date().getTime();
+    
 
         // Check if any day has been clicked today
         const lastClickedDay = Object.values(lastClickTime).find(
@@ -774,7 +777,10 @@ function DailyTask({ userData, showDailyPoint,setShowDailyPoint }) {
         }
 
         // Determine the points based on whether it's the last day
-        const pointsToAdd = day === 10 ? 1000 : 50;
+        const pointsToAdd = day === 10 
+        ? (toast('You have gotten 3500 points'), 3500) 
+        : (toast('You have gotten 100 points'), 100);
+      
 
         // Update the points and set the last click time for the current day
         lastClickTime[day] = currentTime;
@@ -831,6 +837,7 @@ function DailyTask({ userData, showDailyPoint,setShowDailyPoint }) {
             ))}
           </div>
         </div>
+        <ToastContainer />
       </div>
     )
   );
