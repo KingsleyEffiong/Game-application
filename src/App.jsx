@@ -318,46 +318,81 @@ function HomeSection({children}) {
   );
 }
 
-function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage}) {
-  const [tick, setTick] = useState({}); // Initialize an object to track the tick status for each task
 
-  useEffect((task)=>{
-    setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
-  },[])
-  
+function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage }) {
+  const [tick, setTick] = useState({}); // Tracks completed tasks
+  const [isWaiting, setIsWaiting] = useState(false); // Tracks waiting state for tasks
+
+  useEffect(() => {
+    async function fetchCompletedTasks() {
+      try {
+        const userRef = query(collection(db, "users"), where("id", "==", userData.id));
+        const querySnapshot = await getDocs(userRef);
+
+        if (!querySnapshot.empty) {
+          const docSnap = querySnapshot.docs[0];
+          const userTasks = docSnap.data().completedTasks || [];
+
+          // Set the tick status for each completed task
+          const updatedTick = {};
+          userTasks.forEach(task => {
+            updatedTick[task] = true;
+          });
+          setTick(updatedTick);
+        }
+      } catch (error) {
+        console.error("Error fetching completed tasks:", error);
+      }
+    }
+
+    fetchCompletedTasks();
+  }, [userData]);
+
   const handleTaskClick = async (task) => {
     try {
       const userRef = query(collection(db, "users"), where("id", "==", userData.id));
       const querySnapshot = await getDocs(userRef);
 
-      
-
       if (!querySnapshot.empty) {
-        const docSnap = querySnapshot.docs[0]; // Assuming only one document matches the query
+        const docSnap = querySnapshot.docs[0];
         const docRef = doc(db, "users", docSnap.id);
         const userTasks = docSnap.data().completedTasks || [];
 
-        
         if (userTasks.includes(task)) {
           SetShowPopup(true);
           SetpopupMessage(`You have already completed this task`);
           setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
-     
         } else {
-          SetShowPopup(true);
-          SetpopupMessage(`Point won't be added until you complete this task: and if you have done so, wait for your point to be updated within a few minute`);
-
-          setTimeout(async function(){
+          if (task.includes("Telegram")) {
+            // Immediate addition for Telegram tasks
             const newPoints = (userData.point || 0) + 500;
             const newTasks = [...userTasks, task];
-            await updateDoc(docRef, { 
+            await updateDoc(docRef, {
               point: newPoints,
               completedTasks: newTasks
             });
             setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
             SetShowPopup(true);
             SetpopupMessage(`500 points added for completing this task: ${task}`);
-          }, 30000);
+          } else {
+            // Delay for other tasks
+            setIsWaiting(true);
+            SetShowPopup(true);
+            SetpopupMessage(`Please complete the task. Your points will be added after 30 minutes if you have completed the task.`);
+
+            setTimeout(async function () {
+              const newPoints = (userData.point || 0) + 500;
+              const newTasks = [...userTasks, task];
+              await updateDoc(docRef, {
+                point: newPoints,
+                completedTasks: newTasks
+              });
+              setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
+              SetShowPopup(true);
+              SetpopupMessage(`500 points added for completing this task: ${task}`);
+              setIsWaiting(false);
+            }, 1800000); // 30 minutes in milliseconds
+          }
         }
       } else {
         SetShowPopup(true);
@@ -365,7 +400,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
       }
     } catch (error) {
       SetShowPopup(true);
-      SetpopupMessage(`There is a problem updating your point, pls check your internet connection.`);
+      SetpopupMessage(`There is a problem updating your point, please check your internet connection.`);
     }
   };
 
@@ -385,7 +420,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://x.com/Mounttechsol1?t=bfEdrzQCM6cq2mwq8oF0aw&s=09" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
                   onClick={() => handleTaskClick('Follow our Twitter account')}
                 >
                   <h3 className='text-left w-64 leading-tight'>Follow Mount Tech +500</h3>
@@ -397,7 +432,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://t.me/mounttechcolutions" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
                   onClick={() => handleTaskClick('Follow our Telegram announcement page')}
                 >
                   <h3 className='text-left  w-64 leading-tight'>Subscribe to Mount Tech Channel +500</h3>
@@ -409,7 +444,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://youtube.com/@mounttechsolutions" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
                   onClick={() => handleTaskClick('Follow our Youtube page')}
                 > 
                   <h3 className='text-left w-64 leading-tight'>Subscribe to Mount Tech Channel +500</h3>
@@ -421,7 +456,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://t.me/+o0-w-_44_rdkYTQ0" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
                   onClick={() => handleTaskClick('Join Mount Tech Community')}
                 >
                   <h3 className='text-left  w-64 leading-tight'>Join Mount Tech Community +500</h3>
@@ -433,10 +468,10 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://www.tiktok.com/@mount.tech.soluti?_t=8p3i6VHhXTa&_r=1" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
                   onClick={() => handleTaskClick('Follow our Tiktok account')}
                 >
-                  <h3 className='text-left  w-64 leading-tight'>Follow Ticktok account +500</h3>
+                  <h3 className='text-left  w-64 leading-tight'>Follow Tiktok account +500</h3>
                   <i className="bi bi-tiktok"></i>
                   {tick['Follow our Tiktok account'] && <i className="bi bi-check-circle-fill"></i>}
                 </button>
@@ -448,6 +483,8 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
     </>
   );
 }
+
+
 
 
 
@@ -703,7 +740,7 @@ function SubmitWalletAddress({ userData, SetShowPopup, SetpopupMessage }) {
   );
 }
 
-function DailyTask({ userData, showDailyPoint,setShowDailyPoint }) {
+function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
   const [clickedDays, setClickedDays] = useState([]);
   const [timeLeft, setTimeLeft] = useState(null);
 
@@ -749,7 +786,6 @@ function DailyTask({ userData, showDailyPoint,setShowDailyPoint }) {
       }
     }
   };
-  
 
   async function handleDailyPoint(day) {
     try {
@@ -771,7 +807,6 @@ function DailyTask({ userData, showDailyPoint,setShowDailyPoint }) {
         );
 
         if (lastClickedDay) {
-          // console.log("You can only click one container per day.");
           calculateTimeLeft(lastClickTime);
           return;
         }
@@ -815,6 +850,10 @@ function DailyTask({ userData, showDailyPoint,setShowDailyPoint }) {
       : "bg-amber-500  cursor-pointer";
   };
 
+  const getPointsForDay = (day) => {
+    return day === 10 ? 3500 : 100;
+  };
+
   return (
     showDailyPoint && (
       <div className="fixed w-full h-full bg-slate-950 z-50 top-0 left-0 flex flex-col items-center justify-center p-4">
@@ -827,12 +866,13 @@ function DailyTask({ userData, showDailyPoint,setShowDailyPoint }) {
           <div className="flex flex-row flex-wrap py-2 px-2 justify-center">
             {Array.from({ length: 10 }, (_, i) => (
               <div
-                className={`w-20 h-20 rounded-md m-1 shadow-lg flex flex-col items-center justify-center text-black ${getContainerStyle(i + 1)}`}
+                className={`w-[6rem] h-[6rem] rounded-md m-1 shadow-lg flex flex-col items-center justify-center text-black ${getContainerStyle(i + 1)}`}
                 key={i + 1}
                 onClick={() => !isDayDisabled(i + 1) && handleDailyPoint(i + 1)}
               >
                 <img src={mounttechCoin} alt="Logo" className="mx-auto mb-1 w-8 animate-spinSlow" />
                 <span>Day {i + 1}</span>
+                <span className="text-sm">{getPointsForDay(i + 1)} points</span>
               </div>
             ))}
           </div>
@@ -842,6 +882,7 @@ function DailyTask({ userData, showDailyPoint,setShowDailyPoint }) {
     )
   );
 }
+
 
 function Overlay() {
   return (
