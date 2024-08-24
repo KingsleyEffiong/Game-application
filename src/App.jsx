@@ -813,7 +813,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
 
         // Determine the points based on whether it's the last day
         const pointsToAdd = day === 10 
-        ? (toast('You have gotten 3500 points'), 3500) 
+        ? (toast('You have gotten 3500 points'), 2100) 
         : (toast('You have gotten 100 points'), 100);
       
 
@@ -851,7 +851,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
   };
 
   const getPointsForDay = (day) => {
-    return day === 10 ? 3500 : 100;
+    return day === 10 ? 2100 : 100;
   };
 
   return (
