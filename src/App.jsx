@@ -847,7 +847,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
   const getContainerStyle = (day) => {
     return isDayDisabled(day)
       ? "bg-gray-400 cursor-not-allowed"
-      : "bg-amber-500  cursor-pointer";
+      : "bg-yellow-500  cursor-pointer";
   };
 
   const getPointsForDay = (day) => {
@@ -858,7 +858,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
     showDailyPoint && (
       <div className="fixed w-full h-full bg-slate-950 z-50 top-0 left-0 flex flex-col items-center justify-center p-4">
         <div className="bg-slate-950 p-6 text-white rounded text-center shadow-lg shadow-indigo-500/50 max-w-md w-full relative">
-        <button className='text-amber-500 text-lg absolute top-5 right-4' onClick={()=>setShowDailyPoint(false)}>Close</button>
+        <button className='text-yellow-500 text-lg absolute top-5 right-4' onClick={()=>setShowDailyPoint(false)}>Close</button>
           <img src={mounttechCoin} alt="Logo" className="mx-auto mb-1 w-28 animate-spinSlow" />
           <h1 className="uppercase font-semibold">$MTT Daily Boast</h1>
           <h3>Receive an $MTT for daily visiting</h3>
@@ -872,7 +872,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
               >
                 <img src={mounttechCoin} alt="Logo" className="mx-auto mb-1 w-8 animate-spinSlow" />
                 <span>Day {i + 1}</span>
-                <span className="text-sm">{getPointsForDay(i + 1)} points</span>
+                <span className="text-xs">{getPointsForDay(i + 1)} points</span>
               </div>
             ))}
           </div>
