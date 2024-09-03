@@ -609,7 +609,7 @@ function GameQuiz({ userData, setUserData, showQuestion, setShowQuestion }) {
 
   return (
     showQuestion && (
-      <div className="fixed w-full h-full bg-slate-950 z-50 top-0 left-0 flex flex-col items-center justify-center p-4">
+      <div className="fixed w-full h-full bg-slate-950 z-50 top-0 left-0 flex flex-col items-center p-4">
         <div className="shadow-lg shadow-indigo-500/50 max-w-md w-full bg-slate-950 py-3 px-3 h-28 flex items-center animate-drop">
         <h1 className='text-white font-bold text-2xl'>Play to earn 1 million point</h1>
         </div>
@@ -860,7 +860,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
         <div className="bg-slate-950 w-auto h-[500px] overflow-auto p-6 text-white rounded text-center shadow-lg shadow-indigo-500/50 max-w-md relative">
         <button className='text-yellow-500 text-lg absolute top-5 right-4' onClick={()=>setShowDailyPoint(false)}>Close</button>
           <img src={mounttechCoin} alt="Logo" className="mx-auto mb-1 w-28 animate-spinSlow" />
-          <h1 className="uppercase font-semibold">$MTT Daily Boast</h1>
+          <h1 className="uppercase font-semibold">$MTT Daily Boost</h1>
           <h3>Receive an $MTT for daily visiting</h3>
           {timeLeft && <p className="text-red-500 mb-4">{timeLeft}</p>}
           <div className="flex flex-row flex-wrap py-2 px-2 justify-center">

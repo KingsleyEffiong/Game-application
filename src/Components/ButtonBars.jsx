@@ -17,7 +17,7 @@ function ButtonBars({ onFriendsClick, onLeadershipClick, setShowQuestion, setSho
           </button>
           <button className='text-slate-950 bg-yellow-500 rounded py-1 px-1' onClick={()=>{setShowDailyPoint(true)}}>
             <i className="bi bi-rocket text-xs"></i>
-            <h6 className="text-xs">Daily booast</h6>
+            <h6 className="text-xs">Daily boost</h6>
           </button>
           <button className='text-slate-950 bg-yellow-500 rounded py-1 px-1' onClick={onFriendsClick}>
             <i className="bi bi-people-fill text-xs"></i>
