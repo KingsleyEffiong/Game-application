@@ -15,7 +15,7 @@ import Logo from './Components/Logo';
 import Reward from './Components/Reward';
 import ButtonBars from './Components/ButtonBars';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js';
-import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
+import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js';
 import { CryptoQuestions } from './Questions';
 import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
@@ -461,7 +461,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
                 >
                   <h3 className='text-left  w-64 leading-tight'>Join Mount Tech Community +500</h3>
                   <i className="bi bi-telegram"></i>
-                  {tick['Join Mount Tech Community'] && <i className="bi bi-check-circle-fill"></i>}
+                  {tick['Join Mount Tech  Community'] && <i className="bi bi-check-circle-fill"></i>}
                 </button>
               </a>
             </li>
@@ -474,6 +474,30 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
                   <h3 className='text-left  w-64 leading-tight'>Follow Tiktok account +500</h3>
                   <i className="bi bi-tiktok"></i>
                   {tick['Follow our Tiktok account'] && <i className="bi bi-check-circle-fill"></i>}
+                </button>
+              </a>
+            </li>
+            <li>
+              <a href="https://t.me/boost/mounttechcolutions" target="_blank" rel="noopener noreferrer">
+                <button
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+                  onClick={() => handleTaskClick('Boost Telegram Premium')}
+                >
+                  <h3 className='text-left  w-64 leading-tight'>Boost Telegram Premium + 500</h3>
+                  <i className="bi bi-rocket"></i>
+                  {tick['Boost Telegram Premium'] && <i className="bi bi-check-circle-fill"></i>}
+                </button>
+              </a>
+            </li>
+            <li>
+              <a href="https://t.me/boost/mounttechcolutions" target="_blank" rel="noopener noreferrer">
+                <button
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+                  onClick={() => handleTaskClick('Follow Mount Tech on Facebook')}
+                >
+                  <h3 className='text-left  w-64 leading-tight'>Follow Mount Tech on Facebook</h3>
+                  <i className="bi bi-facebook"></i>
+                  {tick['Follow Mount Tech on Facebook'] && <i className="bi bi-check-circle-fill"></i>}
                 </button>
               </a>
             </li>
@@ -816,7 +840,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
         ? (toast('You have gotten 3500 points'), 2100) 
         : (toast('You have gotten 100 points'), 100);
       
-
+      
         // Update the points and set the last click time for the current day
         lastClickTime[day] = currentTime;
         await updateDoc(userDocRef, {
