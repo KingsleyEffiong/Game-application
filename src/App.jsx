@@ -374,12 +374,24 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
             SetShowPopup(true);
             SetpopupMessage(`500 points added for completing this task: ${task}`);
-          } else {
+          } 
+          else if(task.includes('Boost Telegram Premium')){
+            const newPoints = (userData.point || 0) + 3000;
+            const newTasks = [...userTasks, task];
+            await updateDoc(docRef, {
+              point: newPoints,
+              completedTasks: newTasks
+            });
+            setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
+            SetShowPopup(true);
+            SetpopupMessage(`Please complete the task. Your points will be added after 30 minutes if you have completed the task.`);
+            setIsWaiting(false);
+          }
+          else {
             // Delay for other tasks
             setIsWaiting(true);
             SetShowPopup(true);
             SetpopupMessage(`Please complete the task. Your points will be added after 30 minutes if you have completed the task.`);
-
             setTimeout(async function () {
               const newPoints = (userData.point || 0) + 500;
               const newTasks = [...userTasks, task];
@@ -490,7 +502,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
               </a>
             </li>
             <li>
-              <a href="https://www.facebook.com/profile.php?id=61555876704614&mibextid=ZbWKwL" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.facebook.com/profile.php?id=61555876704614" target="_blank" rel="noopener noreferrer">
                 <button
                   className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
                   onClick={() => handleTaskClick('Follow Mount Tech on Facebook')}
