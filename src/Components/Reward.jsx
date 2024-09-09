@@ -20,13 +20,13 @@ function Reward({ userData }) {
     <div className='w-full mb-2 xl:mx-20 h-auto'>
       <div className='mx-3'>
         <h3 className='text-white my-6'>Available Rewards</h3>
-        <div className='w-80 h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2'>
+        <div className='w-80 h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2 animate-scaleUp'>
           <h3 className="w-80">
             {new Intl.NumberFormat('en-NG').format((userData.point).toFixed(1))} points 
           </h3>
           <i className="bi bi-trophy"></i>
         </div>
-        <div className='w-80 h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2' >
+        <div className='w-80 h-14 bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2 animate-scaleUp' >
           <h3 className="w-80">
             {new Intl.NumberFormat('en-NG').format(mttCoins.toFixed(1))} MTT coins
           </h3>

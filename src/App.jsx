@@ -207,7 +207,7 @@ function LeadershipBoard({ userData, onLeadershipClick, SetShowPopup, SetpopupMe
       <div className='h-[800px] overflow-auto px-6'>
         <div className="text-white mb-8">
           <h2 className="text-white text-2xl mb-4 uppercase text-center">Leadership Board</h2>
-          <li className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2">
+          <li className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between px-5 py-2 animate-scaleUp">
             <span className="text-black">
               {userRank ? `${userRank}` : 'Unranked'}. {userData.name} 
             </span>
@@ -217,7 +217,7 @@ function LeadershipBoard({ userData, onLeadershipClick, SetShowPopup, SetpopupMe
         <div className='flex justify-between items-center w-full'>
           <h5 className="text-white mb-4">Top Chat</h5>
           <button 
-            className="mt-6 bg-yellow-400 text-black px-4 py-2 rounded-full hover:bg-yellow-300 transition-colors duration-300"
+            className="mt-6 bg-yellow-400 text-black px-4 py-2 rounded-full hover:bg-yellow-300 transition-colors duration-300 animate-scaleUp"
             onClick={onLeadershipClick}
           >
             Close
@@ -234,7 +234,7 @@ function LeadershipBoard({ userData, onLeadershipClick, SetShowPopup, SetpopupMe
             </li>
           ) : (
             leaderboard.slice(0, 20000).map((user, index) => (
-              <li key={index} className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2">
+              <li key={index} className="w-[22rem] bg-yellow-500 my-6 rounded-full flex flex-row justify-between items-center px-5 py-2 animate-scaleUp">
                 <span className="text-black">
                   {index + 1}. {user.name} 
                   </span>
@@ -268,7 +268,7 @@ function Home({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage,
   return (
     <>
       <Navbar userData={userData} />
-      <GameQuiz userData={userData} setUserData={setUserData} showQuestion={showQuestion} setShowQuestion={setShowQuestion} />
+      <GameQuiz userData={userData} setUserData={setUserData} showQuestion={showQuestion} setShowQuestion={setShowQuestion} setShowLeadershipBoard={setShowLeadershipBoard} setShowDailyPoint={setShowDailyPoint} setShowFriends={setShowFriends}/>
       <div className="flex flex-col items-center">
         <div className="w-fsetShowDailyPointull mt-20 xl:mx-20 h-auto border-white border-b-2">
           <UpdateUserPointDaily userData={userData} />
@@ -280,6 +280,7 @@ function Home({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage,
             SetpopupMessage={SetpopupMessage}
             setShowQuestion={setShowQuestion} // Pass setShowQuestion to Tasks
             showQuestion={showQuestion}
+            setShowLeadershipBoard={setShowLeadershipBoard} setShowDailyPoint={setShowDailyPoint} setShowFriends={setShowFriends}
           />
         </div>
         {showLeadershipBoard && (
@@ -289,6 +290,7 @@ function Home({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage,
               onLeadershipClick={handleLeadershipClick}
               SetShowPopup={SetShowPopup}
               SetpopupMessage={SetpopupMessage}
+              setShowQuestion={setShowQuestion} setShowLeadershipBoard={setShowLeadershipBoard} setShowDailyPoint={setShowDailyPoint} setShowFriends={setShowFriends}
             />
           </div>
         )}
@@ -302,10 +304,11 @@ function Home({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage,
           <Friends
             referralLink={userData.referralLink}
             onClose={() => setShowFriends(false)}
+            setShowQuestion={setShowQuestion} setShowLeadershipBoard={setShowLeadershipBoard} setShowDailyPoint={setShowDailyPoint} setShowFriends={setShowFriends}
           />
         )}
       </div>
-      <ButtonBars onFriendsClick={() => setShowFriends(true)} onLeadershipClick={handleLeadershipClick} setShowQuestion={setShowQuestion}  setShowDailyPoint={setShowDailyPoint}/>
+      <ButtonBars onFriendsClick={() => setShowFriends(true)} onLeadershipClick={handleLeadershipClick} setShowQuestion={setShowQuestion}  setShowDailyPoint={setShowDailyPoint} setShowLeadershipBoard={setShowLeadershipBoard}  setShowFriends={setShowFriends}/>
     </>
   );
 }
@@ -432,7 +435,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://x.com/Mounttechsol1?t=bfEdrzQCM6cq2mwq8oF0aw&s=09" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 animate-scaleUp'
                   onClick={() => handleTaskClick('Follow our Twitter account')}
                 >
                   <h3 className='text-left w-64 leading-tight'>Follow Mount Tech +500</h3>
@@ -444,7 +447,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://t.me/mounttechcolutions" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 animate-scaleUp'
                   onClick={() => handleTaskClick('Follow our Telegram announcement page')}
                 >
                   <h3 className='text-left  w-64 leading-tight'>Subscribe to Mount Tech Channel +500</h3>
@@ -456,7 +459,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://youtube.com/@mounttechsolutions" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 animate-scaleUp'
                   onClick={() => handleTaskClick('Follow our Youtube page')}
                 > 
                   <h3 className='text-left w-64 leading-tight'>Subscribe to Mount Tech Channel +500</h3>
@@ -468,7 +471,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://t.me/+o0-w-_44_rdkYTQ0" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 animate-scaleUp'
                   onClick={() => handleTaskClick('Join Mount Tech Community')}
                 >
                   <h3 className='text-left  w-64 leading-tight'>Join Mount Tech Community +500</h3>
@@ -480,7 +483,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://www.tiktok.com/@mount.tech.soluti?_t=8p3i6VHhXTa&_r=1" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 animate-scaleUp'
                   onClick={() => handleTaskClick('Follow our Tiktok account')}
                 >
                   <h3 className='text-left  w-64 leading-tight'>Follow Tiktok account +500</h3>
@@ -492,7 +495,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://t.me/boost/mounttechcolutions" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 animate-scaleUp'
                   onClick={() => handleTaskClick('Boost Telegram Premium')}
                 >
                   <h3 className='text-left  w-64 leading-tight'>Boost Telegram Premium + 500</h3>
@@ -504,7 +507,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             <li>
               <a href="https://www.facebook.com/profile.php?id=61555876704614" target="_blank" rel="noopener noreferrer">
                 <button
-                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+                  className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 animate-scaleUp'
                   onClick={() => handleTaskClick('Follow Mount Tech on Facebook')}
                 >
                   <h3 className='text-left  w-64 leading-tight'>Follow Mount Tech on Facebook</h3>
@@ -597,6 +600,7 @@ function GameQuiz({ userData, setUserData, showQuestion, setShowQuestion }) {
     if (answer === currentQuestion.correctAnswer) {
       setFeedback('Correct!');
 
+
       try {
         const q = query(collection(db, "users"), where("id", "==", userData.id));
         const querySnapshot = await getDocs(q);
@@ -605,7 +609,7 @@ function GameQuiz({ userData, setUserData, showQuestion, setShowQuestion }) {
           const userDoc = querySnapshot.docs[0];
           const userRef = doc(db, "users", userDoc.id);
 
-          console.log('Updating points for user ID:', userData.id);
+
 
           const newPoints = userData.point + 50;
           await updateDoc(userRef, { point: newPoints });
@@ -613,11 +617,15 @@ function GameQuiz({ userData, setUserData, showQuestion, setShowQuestion }) {
             ...prevData,
             point: newPoints
           }));
+
+          toast.success(`You have been awarded 50 point for answering this question correctly`)
         } else {
-          console.error("No such document with ID:", userData.id);
+          // toast.fai.error("No such document with ID:", userData.id);
+          toast.warning(`No such account found with this user`)
         }
       } catch (error) {
-        console.error("Error updating points:", error.message);
+        // console.error("Error updating points:", error.message);
+        toast.warning('Error updating points:", error.message')
       }
     } else {
       setFailedAttempts((prev) => {
@@ -645,22 +653,22 @@ function GameQuiz({ userData, setUserData, showQuestion, setShowQuestion }) {
 
   return (
     showQuestion && (
-      <div className="fixed w-full h-full bg-slate-950 z-50 top-0 left-0 flex flex-col items-center p-4">
+      <div className="fixed w-full h-full bg-slate-950 z-50 top-0 left-0 flex flex-col items-center p-4 animate-scaleUp">
         <div className="shadow-lg shadow-indigo-500/50 max-w-md w-full bg-slate-950 py-3 px-3 h-28 flex items-center animate-drop">
         <h1 className='text-white font-bold text-2xl'>Play to earn 1 million point</h1>
         </div>
         <Logo className="animate-drop w-48"/>
         <div className="bg-slate-950 p-6 text-white  rounded text-center shadow-lg shadow-indigo-500/50 max-w-md w-full relative">
           <button className='absolute right-0 top-0 px-5 py-6 cursor-pointer' onClick={() => setShowQuestion(false)}>Close</button>
-          <h2 className="text-xl font-bold mb-4">Crypto Quiz</h2>
+          <h2 className="text-xl font-bold mb-4 animate-scaleUp">Crypto Quiz</h2>
           <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2 text-white">{currentQuestion.question}</h3>
-            <div className="space-y-2">
+            <h3 className="text-lg font-semibold mb-2 text-white animate-scaleUp">{currentQuestion.question}</h3>
+            <div className="space-y-2 animate-scaleUp">
               {currentQuestion.options.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => handleAnswer(option)}
-                  className={`block w-full text-left p-2 text-black rounded border ${
+                  className={`block w-full text-left p-2 text-black rounded border animate-scaleUp ${
                     selectedAnswer === option
                       ? option === currentQuestion.correctAnswer
                         ? 'bg-green-700'
@@ -674,8 +682,8 @@ function GameQuiz({ userData, setUserData, showQuestion, setShowQuestion }) {
               ))}
             </div>
           </div>
-          {feedback && <p className="mt-4 text-lg font-semibold">{feedback}</p>}
-          {countdown && <p className="mt-4 text-lg font-semibold">{countdown}</p>}
+          {feedback && <p className="mt-4 text-lg font-semibold animate-scaleUp">{feedback}</p>}
+          {countdown && <p className="mt-4 text-lg font-semibold animate-scaleUp">{countdown}</p>}
         </div>
       </div>
     )
@@ -757,7 +765,7 @@ function SubmitWalletAddress({ userData, SetShowPopup, SetpopupMessage }) {
       <div className="w-full mb-2 xl:mx-20 h-auto mx-3">
         <h3 className="text-white">Submit your wallet address</h3>
         <input
-          className='w-56  md:w-80 my-3 rounded-full px-4 py-2 bg-slate-300 text-sm placeholder:text-stone-950 focus:outline-none focus:ring focus:ring-yellow-400 border-none focus:ring-opacity-50'
+          className='w-56  md:w-80 my-3 rounded-full px-4 py-2 bg-slate-300 text-sm placeholder:text-stone-950 focus:outline-none focus:ring focus:ring-yellow-400 border-none focus:ring-opacity-50 animate-scaleUp'
           type="text"
           placeholder='BSC (Bep 20) wallet address'
           value={walletAddress}
@@ -765,7 +773,7 @@ function SubmitWalletAddress({ userData, SetShowPopup, SetpopupMessage }) {
           onChange={(e) => setWalletAddress(e.target.value)}
         />
         <button
-          className='mx-3 uppercase inline-block bg-yellow-400 rounded-full px-4 py-2 hover:bg-yellow-400 transition-colors duration-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2'
+          className='mx-3 uppercase inline-block bg-yellow-400 rounded-full px-4 py-2 hover:bg-yellow-400 transition-colors duration-300 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 animate-scaleUp'
           onClick={handleSubmit}
           disabled={IsDisabled || IsLoading}
         >
@@ -902,7 +910,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
           <div className="flex flex-row flex-wrap py-2 px-2 justify-center">
             {Array.from({ length: 10 }, (_, i) => (
               <div
-                className={`w-[6rem] h-[6rem] rounded-md m-1 shadow-lg flex flex-col items-center justify-center text-black ${getContainerStyle(i + 1)}`}
+                className={`w-[6rem] h-[6rem] rounded-md m-1 shadow-lg flex flex-col items-center animate-scaleUp justify-center text-black ${getContainerStyle(i + 1)}`}
                 key={i + 1}
                 onClick={() => !isDayDisabled(i + 1) && handleDailyPoint(i + 1)}
               >
