@@ -1,5 +1,7 @@
 import mounttechCoin from '../images/mount tech silver.png';
-function CongratulationsPopup({ children, onClose, congratulationText }) {
+/* eslint-disable react/prop-types */
+
+function CongratulationsPopup({ children, onClose }) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-slate-950 z-[100] animate-scaleUp">
         <div className="bg-slate-950 p-6 w-80 rounded  text-center shadow-lg shadow-indigo-500/50">

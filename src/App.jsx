@@ -37,6 +37,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+
+/* eslint-disable react/prop-types */
+
 function App() {
   const [userData, setUserData] = useState(null);
   const [showPopup, SetShowPopup] = useState(false); 
@@ -153,7 +156,8 @@ function App() {
 
   return (
     <Router>
-      {showPopup && <CongratulationsPopup onClose={() => setShowPopup(false)}>
+      {showPopup && <CongratulationsPopup>
+        {/* onClose={() => setShowPopup(false)} */}
           <p className="mb-4 text-white">
             {popupMesage}
           </p>
@@ -312,7 +316,7 @@ function Home({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage,
     </>
   );
 }
-
+// eslint-disable-next-line no-unused-vars
 function HomeSection({children}) {
   return (
     <div className=''>
@@ -324,7 +328,7 @@ function HomeSection({children}) {
 
 function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage }) {
   const [tick, setTick] = useState({}); // Tracks completed tasks
-  const [isWaiting, setIsWaiting] = useState(false); // Tracks waiting state for tasks
+  const [, setIsWaiting] = useState(false); // Tracks waiting state for tasks
 
   useEffect(() => {
     async function fetchCompletedTasks() {
@@ -353,50 +357,55 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
 
   const handleTaskClick = async (task) => {
     try {
+      console.log(`Task Clicked: ${task}`); // Debug log
+  
       const userRef = query(collection(db, "users"), where("id", "==", userData.id));
       const querySnapshot = await getDocs(userRef);
-
+      
       if (!querySnapshot.empty) {
         const docSnap = querySnapshot.docs[0];
         const docRef = doc(db, "users", docSnap.id);
         const userTasks = docSnap.data().completedTasks || [];
-
+  
+        console.log(`User Tasks: ${userTasks}`); // Debug log
+  
         if (userTasks.includes(task)) {
           SetShowPopup(true);
           SetpopupMessage(`You have already completed this task`);
           setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
         } else {
-          if (task.includes("Telegram")) {
-            // Immediate addition for Telegram tasks
-            const newPoints = (userData.point || 0) + 500;
-            const newTasks = [...userTasks, task];
-            await updateDoc(docRef, {
-              point: newPoints,
-              completedTasks: newTasks
-            });
-            setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
+          if (task === 'Boost Telegram Premium') {
+            // Delay for 14 hours (50,400,000 milliseconds)
+            console.log(`Boost Telegram Premium Task Detected`); // Debug log
+            setIsWaiting(true);
             SetShowPopup(true);
-            SetpopupMessage(`500 points added for completing this task: ${task}`);
-          } 
-          else if(task.includes('Boost Telegram Premium')){
-            const newPoints = (userData.point || 0) + 3000;
-            const newTasks = [...userTasks, task];
-            await updateDoc(docRef, {
-              point: newPoints,
-              completedTasks: newTasks
-            });
-            setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
-            SetShowPopup(true);
-            SetpopupMessage(`Please complete the task. Your points will be added after 30 minutes if you have completed the task.`);
-            setIsWaiting(false);
-          }
-          else {
-            // Delay for other tasks
+            SetpopupMessage(`Please complete the task. Your points will be added after 14 hours if you have completed the task.`);
+            
+            setTimeout(async () => {
+              console.log(`14 Hours Passed for Task: ${task}`); // Debug log
+              const newPoints = (userData.point || 0) + 3000;
+              console.log(`New Points for Task: ${newPoints}`); // Debug log
+              const newTasks = [...userTasks, task];
+              await updateDoc(docRef, {
+                point: newPoints,
+                completedTasks: newTasks
+              });
+              setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
+              SetShowPopup(true);
+              SetpopupMessage(`3000 points added for completing this task: ${task}`);
+              setIsWaiting(false);
+            }, 50400000); // 14 hours in milliseconds
+            
+          } else {
+            // Delay for other tasks (30 minutes)
             setIsWaiting(true);
             SetShowPopup(true);
             SetpopupMessage(`Please complete the task. Your points will be added after 30 minutes if you have completed the task.`);
-            setTimeout(async function () {
+            
+            setTimeout(async () => {
+              console.log(`30 Minutes Passed for Task: ${task}`); // Debug log
               const newPoints = (userData.point || 0) + 500;
+              console.log(`New Points for Task: ${newPoints}`); // Debug log
               const newTasks = [...userTasks, task];
               await updateDoc(docRef, {
                 point: newPoints,
@@ -415,9 +424,10 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
       }
     } catch (error) {
       SetShowPopup(true);
-      SetpopupMessage(`There is a problem updating your point, please check your internet connection.`);
+      SetpopupMessage(`There is a problem updating your points, please check your internet connection.`);
     }
   };
+  
 
   return (
     <>
@@ -498,7 +508,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
                   className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 animate-scaleUp'
                   onClick={() => handleTaskClick('Boost Telegram Premium')}
                 >
-                  <h3 className='text-left  w-64 leading-tight'>Boost Telegram Premium + 500</h3>
+                  <h3 className='text-left  w-64 leading-tight'>Boost Telegram Premium + 3000</h3>
                   <i className="bi bi-rocket"></i>
                   {tick['Boost Telegram Premium'] && <i className="bi bi-check-circle-fill"></i>}
                 </button>
@@ -510,7 +520,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
                   className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 animate-scaleUp'
                   onClick={() => handleTaskClick('Follow Mount Tech on Facebook')}
                 >
-                  <h3 className='text-left  w-64 leading-tight'>Follow Mount Tech on Facebook</h3>
+                  <h3 className='text-left  w-64 leading-tight'>Follow Mount Tech on Facebook + 500</h3>
                   <i className="bi bi-facebook"></i>
                   {tick['Follow Mount Tech on Facebook'] && <i className="bi bi-check-circle-fill"></i>}
                 </button>
@@ -685,6 +695,7 @@ function GameQuiz({ userData, setUserData, showQuestion, setShowQuestion }) {
           {feedback && <p className="mt-4 text-lg font-semibold animate-scaleUp">{feedback}</p>}
           {countdown && <p className="mt-4 text-lg font-semibold animate-scaleUp">{countdown}</p>}
         </div>
+        <ToastContainer />
       </div>
     )
   );
@@ -857,8 +868,8 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
 
         // Determine the points based on whether it's the last day
         const pointsToAdd = day === 10 
-        ? (toast('You have gotten 3500 points'), 2100) 
-        : (toast('You have gotten 100 points'), 100);
+        ? (toast.success('You have gotten 3500 points'), 2100) 
+        : (toast.success('You have gotten 100 points'), 100);
       
       
         // Update the points and set the last click time for the current day
