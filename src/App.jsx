@@ -157,7 +157,6 @@ function App() {
   return (
     <Router>
       {showPopup && <CongratulationsPopup>
-        {/* onClose={() => setShowPopup(false)} */}
           <p className="mb-4 text-white">
             {popupMesage}
           </p>
