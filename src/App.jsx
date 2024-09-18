@@ -397,30 +397,44 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
             }, 50400000); // 14 hours in milliseconds
           }
           else if(task === 'Follow our Telegram announcement page'){
-            const newPoints = (userData.point || 0) + 500;
-            console.log(`New Points for Task: ${newPoints}`); // Debug log
-            const newTasks = [...userTasks, task];
-            await updateDoc(docRef, {
-              point: newPoints,
-              completedTasks: newTasks
-            });
-            setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
-            SetShowPopup(true);
-            SetpopupMessage(`500 points added for completing this task: ${task}`);
-            setIsWaiting(false);
+              // Delay for other tasks (5 seconds)
+              setIsWaiting(true);
+              SetShowPopup(false);
+              SetpopupMessage(`Please complete the task. Your points will be added after 30 minutes if you have completed the task.`);
+              
+              setTimeout(async () => {
+                const newPoints = (userData.point || 0) + 500;
+                console.log(`New Points for Task: ${newPoints}`); // Debug log
+                const newTasks = [...userTasks, task];
+                await updateDoc(docRef, {
+                  point: newPoints,
+                  completedTasks: newTasks
+                });
+                setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
+                SetShowPopup(true);
+                SetpopupMessage(`500 points added for completing this task: ${task}`);
+                setIsWaiting(false);
+              }, 6000); // 6 seconds
           } 
           else if(task === 'Join Mount Tech Community Page'){
-            const newPoints = (userData.point || 0) + 500;
-            console.log(`New Points for Task: ${newPoints}`); // Debug log
-            const newTasks = [...userTasks, task];
-            await updateDoc(docRef, {
-              point: newPoints,
-              completedTasks: newTasks
-            });
-            setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
-            SetShowPopup(true);
-            SetpopupMessage(`500 points added for completing this task: ${task}`);
-            setIsWaiting(false);
+            // Delay for other tasks (5 seconds)
+            setIsWaiting(true);
+            SetShowPopup(false);
+            SetpopupMessage(`Please complete the task. Your points will be added after 30 minutes if you have completed the task.`);
+            
+            setTimeout(async () => {
+              const newPoints = (userData.point || 0) + 500;
+              console.log(`New Points for Task: ${newPoints}`); // Debug log
+              const newTasks = [...userTasks, task];
+              await updateDoc(docRef, {
+                point: newPoints,
+                completedTasks: newTasks
+              });
+              setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
+              SetShowPopup(true);
+              SetpopupMessage(`500 points added for completing this task: ${task}`);
+              setIsWaiting(false);
+            }, 6000); // 6 seconds
           } 
          else {
             // Delay for other tasks (30 minutes)
