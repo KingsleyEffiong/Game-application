@@ -1,7 +1,7 @@
 
 function ButtonBars({ onFriendsClick, onLeadershipClick, setShowQuestion, setShowDailyPoint, setShowLeadershipBoard, setShowFriends }) {
     return (
-      <div className='fixed bottom-0 z-50 px-2 py-2 w-full h-20 xl:mx-20 bg-slate-950'>
+      <div className='fixed bottom-0 z-50 px-2 py-2 w-full h-20 bg-slate-950'>
         <div className='flex justify-center items-center space-x-2'>
           <button className='text-slate-950 bg-yellow-500 rounded py-1 px-1 animate-scaleUp' onClick={()=>{
             setShowLeadershipBoard(false);

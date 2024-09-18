@@ -4,8 +4,8 @@
 
 
 @font-face {
-    font-family: 'Inter';
-    src: url('./assets/static/Inter_18pt-SemiBold.ttf') format('truetype'); 
+    font-family: 'ProtestGuerrilla';
+    src: url('./assets/static/ProtestGuerrilla-Regular.ttf') format('truetype'); 
     font-weight: normal; /* Specify the weight if needed */
     font-style: normal; /* Specify the style if needed */
   }
@@ -13,5 +13,5 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    font-family:'Inter';
+    font-family:'ProtestGuerrilla';
 }

@@ -395,8 +395,34 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
               SetpopupMessage(`3000 points added for completing this task: ${task}`);
               setIsWaiting(false);
             }, 50400000); // 14 hours in milliseconds
-            
-          } else {
+          }
+          else if(task === 'Follow our Telegram announcement page'){
+            const newPoints = (userData.point || 0) + 500;
+            console.log(`New Points for Task: ${newPoints}`); // Debug log
+            const newTasks = [...userTasks, task];
+            await updateDoc(docRef, {
+              point: newPoints,
+              completedTasks: newTasks
+            });
+            setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
+            SetShowPopup(true);
+            SetpopupMessage(`500 points added for completing this task: ${task}`);
+            setIsWaiting(false);
+          } 
+          else if(task === 'Join Mount Tech Community Page'){
+            const newPoints = (userData.point || 0) + 500;
+            console.log(`New Points for Task: ${newPoints}`); // Debug log
+            const newTasks = [...userTasks, task];
+            await updateDoc(docRef, {
+              point: newPoints,
+              completedTasks: newTasks
+            });
+            setTick(prevTick => ({ ...prevTick, [task]: true })); // Mark task as completed
+            SetShowPopup(true);
+            SetpopupMessage(`500 points added for completing this task: ${task}`);
+            setIsWaiting(false);
+          } 
+         else {
             // Delay for other tasks (30 minutes)
             setIsWaiting(true);
             SetShowPopup(true);
@@ -438,7 +464,7 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
           </p>
         </CongratulationsPopup>
       )}
-      <div className='w-full mt-20 xl:mx-20 h-auto border-white border-b-2'>
+      <div className='w-full mt-20 xl:mx-20 h-auto border-white'>
         <div className='mx-3'>
           <h3 className='text-white'>Tasks</h3>
           <ul>
@@ -482,11 +508,11 @@ function Tasks({ userData, showPopup, SetShowPopup, popupMesage, SetpopupMessage
               <a href="https://t.me/+o0-w-_44_rdkYTQ0" target="_blank" rel="noopener noreferrer">
                 <button
                   className='w-auto h-14 bg-yellow-500 my-6 rounded-full flex flex-row space-x-4 items-center px-3 py-2 hover:bg-yellow-800 hover:text-white transition-colors duration-500 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-offset-2 animate-scaleUp'
-                  onClick={() => handleTaskClick('Join Mount Tech Community')}
+                  onClick={() => handleTaskClick('Join Mount Tech Community Page')}
                 >
                   <h3 className='text-left  w-64 leading-tight'>Join Mount Tech Community +500</h3>
                   <i className="bi bi-telegram"></i>
-                  {tick['Join Mount Tech  Community'] && <i className="bi bi-check-circle-fill"></i>}
+                  {tick['Join Mount Tech Community Page'] && <i className="bi bi-check-circle-fill"></i>}
                 </button>
               </a>
             </li>
@@ -901,7 +927,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
 
   const getContainerStyle = (day) => {
     return isDayDisabled(day)
-      ? "bg-gray-400 cursor-not-allowed"
+      ? "bg-red-800 cursor-not-allowed text-white"
       : "bg-yellow-500  cursor-pointer";
   };
 
