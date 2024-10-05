@@ -43,5 +43,4 @@ function WelcomeSection({ handleGetStarted }) {
     );
   }
   
-
 export default WelcomeSection

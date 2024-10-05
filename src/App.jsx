@@ -703,21 +703,21 @@ function GameQuiz({ userData, setUserData, showQuestion, setShowQuestion }) {
   return (
     showQuestion && (
       <div className="fixed w-full h-full bg-slate-950 z-50 top-0 left-0 flex flex-col items-center p-4 animate-scaleUp">
-        <div className="shadow-lg shadow-indigo-500/50 max-w-md w-full bg-slate-950 py-3 px-3 h-28 flex items-center animate-drop">
+        <div className="shadow-lg shadow-indigo-500/50 max-w-md w-full overflow-auto bg-slate-950 py-3 px-3 h-28 flex items-center animate-drop">
         <h1 className='text-white font-bold text-2xl'>Play to earn 1 million point</h1>
         </div>
         <Logo className="animate-drop w-48"/>
-        <div className="bg-slate-950 p-6 text-white  rounded text-center shadow-lg shadow-indigo-500/50 max-w-md w-full relative">
+        <div className="bg-slate-950 p-6 text-white  rounded text-center shadow-lg overflow-auto h-[400px] shadow-indigo-500/50 max-w-md w-full relative">
           <button className='absolute right-0 top-0 px-5 py-6 cursor-pointer' onClick={() => setShowQuestion(false)}>Close</button>
           <h2 className="text-xl font-bold mb-4 animate-scaleUp">Crypto Quiz</h2>
           <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2 text-white animate-scaleUp">{currentQuestion.question}</h3>
+            <h3 className="text-base font-semibold mb-2 text-white animate-scaleUp">{currentQuestion.question}</h3>
             <div className="space-y-2 animate-scaleUp">
               {currentQuestion.options.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => handleAnswer(option)}
-                  className={`block w-full text-left p-2 text-black rounded border animate-scaleUp ${
+                  className={`block w-full text-left text-base p-2 text-black rounded border animate-scaleUp ${
                     selectedAnswer === option
                       ? option === currentQuestion.correctAnswer
                         ? 'bg-green-700'
@@ -731,8 +731,8 @@ function GameQuiz({ userData, setUserData, showQuestion, setShowQuestion }) {
               ))}
             </div>
           </div>
-          {feedback && <p className="mt-4 text-lg font-semibold animate-scaleUp">{feedback}</p>}
-          {countdown && <p className="mt-4 text-lg font-semibold animate-scaleUp">{countdown}</p>}
+          {feedback && <p className="mt-4 text-base font-semibold animate-scaleUp">{feedback}</p>}
+          {countdown && <p className="mt-4 text-base font-semibold animate-scaleUp">{countdown}</p>}
         </div>
         <ToastContainer />
       </div>
@@ -833,7 +833,6 @@ function SubmitWalletAddress({ userData, SetShowPopup, SetpopupMessage }) {
     </div>
   );
 }
-
 function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
   const [clickedDays, setClickedDays] = useState([]);
   const [timeLeft, setTimeLeft] = useState(null);
@@ -863,10 +862,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
 
   const calculateTimeLeft = (lastClickTime) => {
     const currentTime = new Date().getTime();
-
-    // Find the most recent click time
     const recentClickTime = Math.max(...Object.values(lastClickTime || {}));
-    
     if (recentClickTime) {
       const timeSinceLastClick = currentTime - recentClickTime;
       const timeLeft = 24 * 60 * 60 * 1000 - timeSinceLastClick;
@@ -878,6 +874,27 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
         
         setTimeLeft(`${hours}h ${minutes}m ${seconds}s left`);
       }
+    }
+  };
+
+  const restartDailyTask = async () => {
+    try {
+      const userQuery = query(collection(db, "users"), where("id", "==", userData.id));
+      const querySnapshot = await getDocs(userQuery);
+  
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0];
+        const userDocRef = userDoc.ref;
+
+        await updateDoc(userDocRef, {
+          clickedDays: [], // Reset clicked days
+          lastClickTime: {}, // Reset last click times
+        });
+
+        setClickedDays([]); // Reset clickedDays in state
+      }
+    } catch (error) {
+      console.error("Error restarting daily task: ", error);
     }
   };
 
@@ -894,8 +911,6 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
         const lastClickTime = data.lastClickTime || {};
         const currentTime = new Date().getTime();
     
-
-        // Check if any day has been clicked today
         const lastClickedDay = Object.values(lastClickTime).find(
           time => currentTime - time < 24 * 60 * 60 * 1000
         );
@@ -905,13 +920,10 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
           return;
         }
 
-        // Determine the points based on whether it's the last day
         const pointsToAdd = day === 10 
         ? (toast.success('You have gotten 3500 points'), 2100) 
         : (toast.success('You have gotten 100 points'), 100);
       
-      
-        // Update the points and set the last click time for the current day
         lastClickTime[day] = currentTime;
         await updateDoc(userDocRef, {
           point: (data.point || 0) + pointsToAdd,
@@ -919,9 +931,13 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
           clickedDays: [...clickedDays, day],
         });
 
-        // Update UI to reflect the changes
         setClickedDays([...clickedDays, day]);
         calculateTimeLeft(lastClickTime);
+
+        // Restart the daily task cycle if it's day 10
+        if (day === 10) {
+          await restartDailyTask(); // Reset everything after 10th day
+        }
       } else {
         console.log("No user document found with the provided ID.");
       }
@@ -941,7 +957,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
   const getContainerStyle = (day) => {
     return isDayDisabled(day)
       ? "bg-red-800 cursor-not-allowed text-white"
-      : "bg-yellow-500  cursor-pointer";
+      : "bg-yellow-500 cursor-pointer";
   };
 
   const getPointsForDay = (day) => {
@@ -976,6 +992,7 @@ function DailyTask({ userData, showDailyPoint, setShowDailyPoint }) {
     )
   );
 }
+
 
 
 function Overlay() {
